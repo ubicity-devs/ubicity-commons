@@ -27,15 +27,27 @@ public final class Answer implements Serializable    {
     
     static final long serialVersionUID = 8298698192183635193L;
     
-    public static final Answer ACK = new Answer( 200 );
+    public final static int HTTP_OK = 200;
+    public final static int HTTP_ACCEPTED = 202;
+    public final static int HTTP_BAD_REQUEST = 400;
+    public final static int HTTP_UNAVAILABLE = 503;
+    public final static int HTTP_SERVERSIDE_ERROR = 900;
+    public final static int HTTP_UNSPECIFIED_ERROR = 907;
     
-    public static final Answer PARTIAL_ACK = new Answer( 202 );
     
-    public static final Answer FAIL = new Answer( 400 );
     
-    public static final Answer NOT_IMPLEMENTED_YET = new Answer( 503 );
+    public static final Answer ACK = new Answer( HTTP_OK );
     
-    public static final Answer ERROR = new Answer( 900 );
+    public static final Answer PARTIAL_ACK = new Answer( HTTP_ACCEPTED );
+    
+    public static final Answer FAIL = new Answer( HTTP_BAD_REQUEST );
+    
+    public static final Answer NOT_IMPLEMENTED_YET = new Answer( HTTP_UNAVAILABLE );
+    
+    public static final Answer ERROR = new Answer( HTTP_SERVERSIDE_ERROR );
+
+    public static final Answer NIL = new Answer( HTTP_UNSPECIFIED_ERROR );
+    
     
     
     
@@ -47,6 +59,10 @@ public final class Answer implements Serializable    {
         code = _code;
     }
     
+    
+    public final int getCode()  {
+        return code;
+    }
     
     public final boolean equals( Object o ) {
         if( null == o ) return false;

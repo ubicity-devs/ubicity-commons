@@ -19,6 +19,8 @@
 package at.ac.ait.ubicity.commons.protocol;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -31,6 +33,9 @@ public class Medium implements Serializable {
 
     
     public final static Medium FLICKR =  new Medium( "flickr" );
+    
+    
+    
     
     
     protected final String name;

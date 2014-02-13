@@ -18,9 +18,12 @@
  */
 package at.ac.ait.ubicity.commons.protocol;
 
+import static at.ac.ait.ubicity.commons.protocol.Medium.FLICKR;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -33,6 +36,13 @@ public class Media implements Serializable {
     
     protected List< Medium > mediumList = new ArrayList();
     
+    
+    public static final Map< String, Medium > knownMedia = new HashMap();
+    
+    
+    static  {
+        knownMedia.put( FLICKR.name, FLICKR );
+    }    
     
     
     

@@ -44,4 +44,8 @@ public interface Constants {
     
     
     public final static int REVERSE_COMMAND_AND_CONTROL_PORT = 9876;
+    
+    public final static String REVERSE_COMMAND_AND_CONTROL_HOST = "localhost";
+    
+    public final long REVERSE_COMMAND_AND_CONTROL_TIMEOUT = 10000;
 }

@@ -19,6 +19,8 @@
 package at.ac.ait.ubicity.commons.protocol;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -35,6 +37,15 @@ public final class Control implements Serializable   {
     public final static Control PAUSE = new Control( INTERNAL_PAUSE_CODE );
     
     public final static Control STOP = new Control( INTERNAL_STOP_CODE );
+    
+    
+    public final static Map< String, Control > knownControls = new HashMap();
+    
+    
+    static  {
+        knownControls.put( "pause", PAUSE );
+        knownControls.put( "stop", STOP );
+    }
     
     
     
