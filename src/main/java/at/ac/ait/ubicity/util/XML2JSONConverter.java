@@ -12,7 +12,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 import org.apache.commons.io.LineIterator;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -22,21 +31,33 @@ import org.json.XML;
  */
 public final class XML2JSONConverter {
 
+    public XML2JSONConverter() {
+    }
+
+    
     public final static String XML_EXTENSION = ".xml";
 
     public final static String JSON_EXTENSION = ".json";
     
     public final static double TWO  = new Double( "2" );
     
+    static TransportClient esclient;
     
     public final static void main( String... args ) throws IOException  {
         File in = new File( args[ 0 ] );
         File outputDirectory = new File( args[ 1 ] );
-        if( in.isDirectory() ) handleDirectory( in, outputDirectory );
+        XML2JSONConverter converter = new XML2JSONConverter();
+
+        Settings settings = ImmutableSettings.settingsBuilder().build();        
+        esclient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress( "localhost", 9300));
+        
+        if( in.isDirectory() ) {
+            converter.handleDirectory( in, outputDirectory );
+        }
         else    {
             long _start, _lapse;
             _start = System.nanoTime();
-            new FileHandler( outputDirectory ).convert( in );
+            new FileHandler( outputDirectory, null ).convert( in );
             _lapse = ( System.nanoTime() - _start ) / 1000;
             System.out.println( "processing xml file of " + in.length() + " bytes took " + _lapse + " microseconds" );
         }
@@ -44,7 +65,7 @@ public final class XML2JSONConverter {
 
     
     
-    private static void handleDirectory(File in, File outputDirectory ) {
+    private  void handleDirectory(File in, File outputDirectory ) {
         final FileFilter _xmlFilter = (File _f) -> _f.getName().toLowerCase().endsWith( XML_EXTENSION );
         
         File[] _xmlFiles = in.listFiles( _xmlFilter );
@@ -52,9 +73,23 @@ public final class XML2JSONConverter {
         final ExecutorService exec = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() * 2 );        
         final Disruptor< XMLFile > disruptor = new Disruptor( FileHandler.EVENT_FACTORY, ( int ) Math.pow( TWO, 17 ), exec );
         
-        final EventHandler< XMLFile > _eventHandler = new FileHandler( outputDirectory );
+        final EventHandler< XMLFile > _eventHandler = new FileHandler( outputDirectory, esclient );
         disruptor.handleEventsWith( _eventHandler );
         RingBuffer< XMLFile > ringBuffer = disruptor.start();
+        
+        
+        try  {
+            
+            CreateIndexRequestBuilder createIndexRequestBuilder = esclient.admin().indices().prepareCreate( "story" );
+            createIndexRequestBuilder.execute().actionGet();
+        }
+        catch( Throwable t )    {
+            //do nothing, we may get an IndexAlreadyExistsException, but don't care about that, here and now
+            
+        }        
+            
+        
+        
         
         int fileCounter = 0;
         
@@ -83,7 +118,13 @@ final class FileHandler implements EventHandler< XMLFile> {
      //Nifty: Java 8 allows for lambda expressions. Let's use them. 
      public final static EventFactory< XMLFile > EVENT_FACTORY = () -> new XMLFile();    
     
-    FileHandler( final File _outputDirectory )   { outputDirectory = _outputDirectory; }
+    TransportClient esclient;
+     
+     
+    FileHandler( final File _outputDirectory, TransportClient _esclient )   { 
+        outputDirectory = _outputDirectory; 
+        esclient = _esclient;
+    }
 
     
     @Override
@@ -98,11 +139,29 @@ final class FileHandler implements EventHandler< XMLFile> {
             sb.append( reader.next() );
         }
         JSONObject json = XML.toJSONObject( sb.toString() );
-        
-        String __fileName = _f.getName();
+         String __fileName = _f.getName();
         int _pointLocation = __fileName.indexOf( '.' );
+         String __id = __fileName.substring( 0, _pointLocation );
+              try {
+                    IndexRequestBuilder indexRequestBuilder = esclient.prepareIndex( "story", "doc" );
+                    try {
+                            indexRequestBuilder.setSource( json.toString() );
+                            indexRequestBuilder.setId( __id );
+                            IndexResponse response = indexRequestBuilder .execute().actionGet();
+                            
+                            if(  response == null )     {
+                                Logger.getLogger( this.getClass().getName() ).warning( this.getClass().getName() + " : got a <null> IndexResponse when trying to index against elasticsearch " );
+                            }
+                    }
+                    catch( Throwable tt )   {
+                        tt.printStackTrace();
+                    }
+              }
+            catch( JSONException somethingWrong )   {
+                Logger.getLogger( this.getClass().getName() ).fine( "caught a JSONException : " + somethingWrong.toString() );
+            }                    
 
-        String __JSONfileName = outputDirectory + "/" + __fileName.substring( 0, _pointLocation ) + XML2JSONConverter.JSON_EXTENSION;
+        String __JSONfileName = outputDirectory + "/" + __id + XML2JSONConverter.JSON_EXTENSION;
          try (FileWriter _jsonFile = new FileWriter( new File( __JSONfileName ) )) {
              _jsonFile.write( json.toString( 3 ) );
              _jsonFile.flush();
