@@ -30,7 +30,7 @@ public class Terms implements Serializable   {
     static final long serialVersionUID = 901098758911623997L;
     
     
-    private final List< Term > termList = new ArrayList();
+    public final List< Term > termList = new ArrayList();
     
     
     public Terms()  {
@@ -48,9 +48,9 @@ public class Terms implements Serializable   {
         StringBuilder sb = new StringBuilder();
         if( termList.size() > 0 )   {
             sb.append( "q=(" );
-            for( Term t: termList ) {
+            termList.stream().forEach((t) -> {
                 sb.append( t.getValue().toLowerCase() ).append( " " );
-            }
+            });
             sb.append( ")" );
             return sb.toString();
         }
@@ -59,9 +59,9 @@ public class Terms implements Serializable   {
     
     public final String getType()   {
         StringBuilder sb = new StringBuilder();
-        for( Term t: termList ) {
+        termList.stream().forEach((t) -> {
             sb.append( t.getValue() );
-        }
+        });
         return sb.toString().toLowerCase();
     }
 }

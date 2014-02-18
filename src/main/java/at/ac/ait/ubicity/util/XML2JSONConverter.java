@@ -1,4 +1,3 @@
-
 package at.ac.ait.ubicity.util;
 
 import com.lmax.disruptor.EventFactory;
@@ -8,7 +7,6 @@ import com.lmax.disruptor.dsl.Disruptor;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,10 +29,8 @@ import org.json.XML;
  */
 public final class XML2JSONConverter {
 
-    public XML2JSONConverter() {
-    }
+    public XML2JSONConverter() {}
 
-    
     public final static String XML_EXTENSION = ".xml";
 
     public final static String JSON_EXTENSION = ".json";
@@ -63,8 +59,7 @@ public final class XML2JSONConverter {
         }
     }
 
-    
-    
+     
     private  void handleDirectory(File in, File outputDirectory ) {
         final FileFilter _xmlFilter = (File _f) -> _f.getName().toLowerCase().endsWith( XML_EXTENSION );
         
@@ -85,11 +80,7 @@ public final class XML2JSONConverter {
         }
         catch( Throwable t )    {
             //do nothing, we may get an IndexAlreadyExistsException, but don't care about that, here and now
-            
         }        
-            
-        
-        
         
         int fileCounter = 0;
         
@@ -161,12 +152,14 @@ final class FileHandler implements EventHandler< XMLFile> {
                 Logger.getLogger( this.getClass().getName() ).fine( "caught a JSONException : " + somethingWrong.toString() );
             }                    
 
+	      /**
         String __JSONfileName = outputDirectory + "/" + __id + XML2JSONConverter.JSON_EXTENSION;
          try (FileWriter _jsonFile = new FileWriter( new File( __JSONfileName ) )) {
              _jsonFile.write( json.toString( 3 ) );
              _jsonFile.flush();
              _jsonFile.close();
-         }        
+         }       
+	      */ 
     }
 }
 
