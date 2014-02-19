@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import jdk.nashorn.internal.objects.NativeJSAdapter;
 import org.apache.commons.io.LineIterator;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -31,6 +32,8 @@ import org.json.XML;
  */
 public final class XML2JSONConverter {
 
+    public static boolean mustWriteJSON;
+    
     public XML2JSONConverter() {
     }
 
@@ -46,8 +49,15 @@ public final class XML2JSONConverter {
     public final static void main( String... args ) throws IOException  {
         File in = new File( args[ 0 ] );
         File outputDirectory = new File( args[ 1 ] );
-        XML2JSONConverter converter = new XML2JSONConverter();
 
+        
+        //default behaviour: do not write JSON output files to local file system
+        boolean __shouldWriteJSON = false;
+        if( args.length == 3 ) __shouldWriteJSON = args[ 2 ].toLowerCase().equals( "dojsonwrite" );
+        
+        XML2JSONConverter.mustWriteJSON = __shouldWriteJSON;
+        XML2JSONConverter converter = new XML2JSONConverter();
+        
         Settings settings = ImmutableSettings.settingsBuilder().build();        
         esclient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress( "localhost", 9300));
         
@@ -57,10 +67,13 @@ public final class XML2JSONConverter {
         else    {
             long _start, _lapse;
             _start = System.nanoTime();
-            new FileHandler( outputDirectory, null ).convert( in );
+            
+            FileHandler _handler = new FileHandler( outputDirectory, null );
+            _handler.convert( in );
             _lapse = ( System.nanoTime() - _start ) / 1000;
             System.out.println( "processing xml file of " + in.length() + " bytes took " + _lapse + " microseconds" );
         }
+        System.exit( 0 );
     }
 
     
@@ -87,13 +100,9 @@ public final class XML2JSONConverter {
             //do nothing, we may get an IndexAlreadyExistsException, but don't care about that, here and now
             
         }        
-            
-        
-        
-        
         int fileCounter = 0;
         
-        System.out.println( "[ INFO ] beginning processing of XML files in " + in.getAbsolutePath() );
+        System.out.println( "[INFO] beginning processing of XML files in " + in.getAbsolutePath() );
         long _start, _lapse;
         _start = System.nanoTime();
         for( File __f: _xmlFiles )    {
@@ -105,7 +114,7 @@ public final class XML2JSONConverter {
         }
         disruptor.shutdown();
         _lapse = ( System.nanoTime() - _start ) / 1000;
-        System.out.println( "[ INFO ] processed " + fileCounter + " files in " + _lapse + " microseconds" );
+        System.out.println( "[INFO] processed " + fileCounter + " files in " + _lapse + " microseconds" );
     }
 }
 
@@ -114,7 +123,7 @@ final class FileHandler implements EventHandler< XMLFile> {
 
     private final File outputDirectory;
     
-
+    
      //Nifty: Java 8 allows for lambda expressions. Let's use them. 
      public final static EventFactory< XMLFile > EVENT_FACTORY = () -> new XMLFile();    
     
@@ -160,13 +169,14 @@ final class FileHandler implements EventHandler< XMLFile> {
             catch( JSONException somethingWrong )   {
                 Logger.getLogger( this.getClass().getName() ).fine( "caught a JSONException : " + somethingWrong.toString() );
             }                    
-
-        String __JSONfileName = outputDirectory + "/" + __id + XML2JSONConverter.JSON_EXTENSION;
-         try (FileWriter _jsonFile = new FileWriter( new File( __JSONfileName ) )) {
-             _jsonFile.write( json.toString( 3 ) );
-             _jsonFile.flush();
-             _jsonFile.close();
-         }        
+          if( XML2JSONConverter.mustWriteJSON )   {
+            String __JSONfileName = outputDirectory + "/" + __id + XML2JSONConverter.JSON_EXTENSION;
+            try (FileWriter _jsonFile = new FileWriter( new File( __JSONfileName ) )) {
+                 _jsonFile.write( json.toString( 3 ) );
+                 _jsonFile.flush();
+                 _jsonFile.close();
+             }
+          }
     }
 }
 

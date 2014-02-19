@@ -25,12 +25,12 @@ import java.util.List;
  *
  * @author jan
  */
-public class Terms implements Serializable   {
+public final class Terms implements Serializable   {
     
     static final long serialVersionUID = 901098758911623997L;
     
     
-    private final List< Term > termList = new ArrayList();
+    public final List< Term > termList = new ArrayList();
     
     
     public Terms()  {
