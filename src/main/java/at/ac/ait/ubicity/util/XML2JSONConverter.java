@@ -1,4 +1,3 @@
-
 package at.ac.ait.ubicity.util;
 
 import com.lmax.disruptor.EventFactory;
@@ -8,7 +7,6 @@ import com.lmax.disruptor.dsl.Disruptor;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,12 +30,15 @@ import org.json.XML;
  */
 public final class XML2JSONConverter {
 
+<<<<<<< HEAD
     public static boolean mustWriteJSON;
     
     public XML2JSONConverter() {
     }
+=======
+    public XML2JSONConverter() {}
+>>>>>>> 8542cbd5b4a3ea25646ce25b8b2028a55a3d8d85
 
-    
     public final static String XML_EXTENSION = ".xml";
 
     public final static String JSON_EXTENSION = ".json";
@@ -76,8 +77,7 @@ public final class XML2JSONConverter {
         System.exit( 0 );
     }
 
-    
-    
+     
     private  void handleDirectory(File in, File outputDirectory ) {
         final FileFilter _xmlFilter = (File _f) -> _f.getName().toLowerCase().endsWith( XML_EXTENSION );
         
@@ -98,8 +98,11 @@ public final class XML2JSONConverter {
         }
         catch( Throwable t )    {
             //do nothing, we may get an IndexAlreadyExistsException, but don't care about that, here and now
-            
         }        
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 8542cbd5b4a3ea25646ce25b8b2028a55a3d8d85
         int fileCounter = 0;
         
         System.out.println( "[INFO] beginning processing of XML files in " + in.getAbsolutePath() );
@@ -169,6 +172,7 @@ final class FileHandler implements EventHandler< XMLFile> {
             catch( JSONException somethingWrong )   {
                 Logger.getLogger( this.getClass().getName() ).fine( "caught a JSONException : " + somethingWrong.toString() );
             }                    
+<<<<<<< HEAD
           if( XML2JSONConverter.mustWriteJSON )   {
             String __JSONfileName = outputDirectory + "/" + __id + XML2JSONConverter.JSON_EXTENSION;
             try (FileWriter _jsonFile = new FileWriter( new File( __JSONfileName ) )) {
@@ -177,6 +181,17 @@ final class FileHandler implements EventHandler< XMLFile> {
                  _jsonFile.close();
              }
           }
+=======
+
+	      /**
+        String __JSONfileName = outputDirectory + "/" + __id + XML2JSONConverter.JSON_EXTENSION;
+         try (FileWriter _jsonFile = new FileWriter( new File( __JSONfileName ) )) {
+             _jsonFile.write( json.toString( 3 ) );
+             _jsonFile.flush();
+             _jsonFile.close();
+         }       
+	      */ 
+>>>>>>> 8542cbd5b4a3ea25646ce25b8b2028a55a3d8d85
     }
 }
 

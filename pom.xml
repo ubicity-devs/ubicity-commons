@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>at.ac.ait.ubicity</groupId>
-  <artifactId>commons1</artifactId>
+  <artifactId>commons</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -29,7 +29,7 @@
         </executions>
         <configuration>
           <mainClass>at.ac.ait.ubicity.util.XML2JSONConverter</mainClass>
-          <commandlineArgs>/data/sl/af/story_xmls/texts5/ ./json_output</commandlineArgs>
+          <commandlineArgs>c:/data/saillabs/story_xmls/texts/ c:/data/saillabs/json_output/texts</commandlineArgs>
           <systemProperties>
             <systemProperty>
               <key>-Xms</key>
