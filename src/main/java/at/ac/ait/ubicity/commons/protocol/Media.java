@@ -19,6 +19,7 @@
 package at.ac.ait.ubicity.commons.protocol;
 
 import static at.ac.ait.ubicity.commons.protocol.Medium.FLICKR;
+import static at.ac.ait.ubicity.commons.protocol.Medium.TWITTER;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class Media implements Serializable {
     
     static  {
         knownMedia.put( FLICKR.name, FLICKR );
+        knownMedia.put( TWITTER.name, TWITTER );
     }    
     
     
@@ -62,10 +64,12 @@ public class Media implements Serializable {
         StringBuilder sb = new StringBuilder();
         if( mediumList.size() > 0 ) {
             sb.append( "m=(" );
-            for( Medium m : mediumList )    {
+            mediumList.stream().map((m) -> {
                 sb.append( m.getName() );
+                return m;
+            }).forEach((_item) -> {
                 sb.append( " " );
-            }
+            });
             sb.append( ")" );
             return sb.toString();
         }

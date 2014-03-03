@@ -4,15 +4,19 @@ import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-import jdk.nashorn.internal.objects.NativeJSAdapter;
+
 import org.apache.commons.io.LineIterator;
+import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
@@ -30,14 +34,14 @@ import org.json.XML;
  */
 public final class XML2JSONConverter {
 
-<<<<<<< HEAD
+
     public static boolean mustWriteJSON;
     
     public XML2JSONConverter() {
     }
-=======
-    public XML2JSONConverter() {}
->>>>>>> 8542cbd5b4a3ea25646ce25b8b2028a55a3d8d85
+
+
+
 
     public final static String XML_EXTENSION = ".xml";
 
@@ -60,7 +64,7 @@ public final class XML2JSONConverter {
         XML2JSONConverter converter = new XML2JSONConverter();
         
         Settings settings = ImmutableSettings.settingsBuilder().build();        
-        esclient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress( "localhost", 9300));
+        esclient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress( "ubicity.ait.ac.at", 9300));
         
         if( in.isDirectory() ) {
             converter.handleDirectory( in, outputDirectory );
@@ -96,13 +100,9 @@ public final class XML2JSONConverter {
             CreateIndexRequestBuilder createIndexRequestBuilder = esclient.admin().indices().prepareCreate( "story" );
             createIndexRequestBuilder.execute().actionGet();
         }
-        catch( Throwable t )    {
+        catch( ElasticSearchException t )    {
             //do nothing, we may get an IndexAlreadyExistsException, but don't care about that, here and now
         }        
-<<<<<<< HEAD
-=======
-        
->>>>>>> 8542cbd5b4a3ea25646ce25b8b2028a55a3d8d85
         int fileCounter = 0;
         
         System.out.println( "[INFO] beginning processing of XML files in " + in.getAbsolutePath() );
@@ -165,23 +165,23 @@ final class FileHandler implements EventHandler< XMLFile> {
                                 Logger.getLogger( this.getClass().getName() ).warning( this.getClass().getName() + " : got a <null> IndexResponse when trying to index against elasticsearch " );
                             }
                     }
-                    catch( Throwable tt )   {
+                    catch( ElasticSearchException tt )   {
                         tt.printStackTrace();
                     }
               }
             catch( JSONException somethingWrong )   {
                 Logger.getLogger( this.getClass().getName() ).fine( "caught a JSONException : " + somethingWrong.toString() );
             }                    
-<<<<<<< HEAD
+
           if( XML2JSONConverter.mustWriteJSON )   {
             String __JSONfileName = outputDirectory + "/" + __id + XML2JSONConverter.JSON_EXTENSION;
-            try (FileWriter _jsonFile = new FileWriter( new File( __JSONfileName ) )) {
+            try ( FileWriter _jsonFile = new FileWriter( new File( __JSONfileName ) )) {
                  _jsonFile.write( json.toString( 3 ) );
                  _jsonFile.flush();
                  _jsonFile.close();
              }
           }
-=======
+
 
 	      /**
         String __JSONfileName = outputDirectory + "/" + __id + XML2JSONConverter.JSON_EXTENSION;
@@ -191,7 +191,7 @@ final class FileHandler implements EventHandler< XMLFile> {
              _jsonFile.close();
          }       
 	      */ 
->>>>>>> 8542cbd5b4a3ea25646ce25b8b2028a55a3d8d85
+
     }
 }
 
