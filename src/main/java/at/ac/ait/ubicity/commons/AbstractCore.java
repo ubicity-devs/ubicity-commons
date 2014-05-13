@@ -51,16 +51,12 @@ public class AbstractCore implements Runnable {
 	protected static AbstractCore singleton;
 
 	// here we keep track of currently running plugins
-	protected final Map<UbicityPlugin, PluginContext> plugins = new HashMap();
+	protected final Map<UbicityPlugin, PluginContext> plugins = new HashMap<UbicityPlugin, PluginContext>();
 
-	protected final Map<UbicityAddOn, AddOnContext> addOns = new HashMap();
+	protected final Map<UbicityAddOn, AddOnContext> addOns = new HashMap<UbicityAddOn, AddOnContext>();
 
 	// our elasticsearch indexing client
 	protected static final TransportClient esclient;
-
-	// the Core's own configuration. Static, as Core implements the Singleton
-	// pattern
-	protected static Configuration config;
 
 	// this object is doing actual plugin management for us ( at least the
 	// loading & instantiation part )
@@ -74,44 +70,42 @@ public class AbstractCore implements Runnable {
 
 	protected static Logger logger;
 
-	public static String server;
-	public static String index;
-	public static String type;
+	public static String ES_SERVER;
+	public static int ES_SERVER_PORT;
+	public static String ES_INDEX;
+	public static String ES_TYPE;
 
 	static {
 
 		logger = Logger.getLogger(AbstractCore.class.getName());
 
+		Configuration config;
+
 		// get our own Configuration
 		try {
 			// set necessary stuff for us to ueberhaupt be able to work
 			config = new PropertiesConfiguration("core.cfg");
-			server = config.getString("core.elasticsearch.host");
-			index = config.getString("core.elasticsearch.index");
-			type = config.getString("core.elasticsearch.type");
-			logger.info("Core : will index to " + server + ":" + 9200 + "/"
-					+ index + " @type " + type);
+			ES_SERVER = config.getString("core.elasticsearch.host");
+			ES_SERVER_PORT = config.getInt("core.elasticsearch.host_port");
+			ES_INDEX = config.getString("core.elasticsearch.index");
+			ES_TYPE = config.getString("core.elasticsearch.type");
+			logger.info("Core : will index to " + ES_SERVER + ":"
+					+ ES_SERVER_PORT + "/" + ES_INDEX + " @type " + ES_TYPE);
 		} catch (ConfigurationException noConfig) {
 			// log this problem and then go along with default configuration
 			logger.warning("Core :: could not configure from core.cfg file [ not found, or there was a problem with it ], trying to revert to DefaultConfiguration  : "
 					+ noConfig.toString());
-			// here, we need not set any fields on our selves,
-			// DefaultConfiguration is clever enough to figure this out and do
-			// it for us
-			config = new DefaultConfiguration();
-		} catch (NullPointerException noConfig) {
-			config = new DefaultConfiguration();
 		}
 
 		// instantiate an elasticsearch client
 		Settings settings = ImmutableSettings.settingsBuilder().build();
 		esclient = new TransportClient(settings)
-				.addTransportAddress(new InetSocketTransportAddress(server,
-						9300));
+				.addTransportAddress(new InetSocketTransportAddress(ES_SERVER,
+						ES_SERVER_PORT));
 		try {
 
 			CreateIndexRequestBuilder createIndexRequestBuilder = esclient
-					.admin().indices().prepareCreate(index);
+					.admin().indices().prepareCreate(ES_INDEX);
 			createIndexRequestBuilder.execute().actionGet();
 		} catch (Throwable t) {
 			// do nothing, we may get an IndexAlreadyExistsException, but don't

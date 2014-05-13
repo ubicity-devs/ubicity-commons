@@ -41,7 +41,7 @@ public class JSONObjectHandler implements EventHandler< JSONObjectWrapper >  {
     public void onEvent(JSONObjectWrapper event, long sequence, boolean endOfBatch) throws Exception {
         try {
                     
-                    IndexRequestBuilder indexRequestBuilder = esclient.prepareIndex( AbstractCore.index, AbstractCore.type);
+                    IndexRequestBuilder indexRequestBuilder = esclient.prepareIndex( AbstractCore.ES_INDEX, AbstractCore.ES_TYPE);
                     String __id = new StringBuilder().append( System.currentTimeMillis() ).append( System.nanoTime() ).toString();
                     try {
                             indexRequestBuilder.setSource( event.toString() );
