@@ -1,4 +1,4 @@
-package at.ac.ait.ubicity.util;
+package at.ac.ait.ubicity.commons.util;
 
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;

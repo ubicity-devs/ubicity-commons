@@ -18,18 +18,15 @@
 
 package at.ac.ait.ubicity.commons;
 
-import at.ac.ait.ubicity.commons.interfaces.UbicityAddOn;
-import at.ac.ait.ubicity.commons.interfaces.UbicityPlugin;
-import at.ac.ait.ubicity.commons.protocol.Answer;
-import at.ac.ait.ubicity.commons.protocol.Command;
 import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -40,161 +37,162 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.json.JSONObject;
 
+import at.ac.ait.ubicity.commons.interfaces.UbicityAddOn;
+import at.ac.ait.ubicity.commons.interfaces.UbicityPlugin;
+import at.ac.ait.ubicity.commons.protocol.Answer;
+import at.ac.ait.ubicity.commons.protocol.Command;
+
 /**
  *
  * @author jan
  */
-public  class AbstractCore implements Runnable {
- 
-    
+public class AbstractCore implements Runnable {
 
-    protected static AbstractCore singleton;
-    
+	protected static AbstractCore singleton;
 
-    
-    
-    //here we keep track of currently running plugins
-    protected final Map< UbicityPlugin, PluginContext > plugins = new HashMap();
-       
-    protected final Map< UbicityAddOn, AddOnContext > addOns = new HashMap();
-    
-    //our elasticsearch indexing client
-    protected static final TransportClient esclient;
+	// here we keep track of currently running plugins
+	protected final Map<UbicityPlugin, PluginContext> plugins = new HashMap();
 
-    
-    //the Core's own configuration. Static, as Core implements the Singleton pattern
-    protected static Configuration config;
-    
-    
-    //this object is doing actual plugin management for us ( at least the loading & instantiation part ) 
-    protected final PluginManager pluginManager = PluginManagerFactory.createPluginManager();
-    
-    //the place where the PluginManager is supposed to ( cyclically ) look for new plugins being dumped, in .jar form
-    protected final URI pluginURI  = new File( Constants.PLUGIN_DIRECTORY_NAME ).toURI();
-    
-    protected static Logger logger;
-    
-    public static String server;
-    public static String index;
-    public static String type;
-    
-    
-    
-    static  {
-                
-        logger = Logger.getLogger( AbstractCore.class.getName() );
-        
-        logger.setLevel( Level.ALL );
-        
-        //get our own Configuration
-        try {
-            //set necessary stuff for us to ueberhaupt be able to work
-            config = new PropertiesConfiguration( "core.cfg" );
-            server = config.getString( "ELASTICSEARCH_HOST" );
-            index = config.getString( "ELASTICSEARCH_INDEX" );
-            type = config.getString( "ELASTICSEARCH_TYPE" ); 
-            logger.info( "Core : will index to " + server + ":" + 9200 + "/" + index + " @type " + type );
-        }
-        catch( ConfigurationException noConfig )    {
-            //log this problem and then go along with default configuration
-            logger.warning( "Core :: could not configure from core.cfg file [ not found, or there was a problem with it ], trying to revert to DefaultConfiguration  : " + noConfig.toString() );
-            //here, we need not set any fields on our selves, DefaultConfiguration is clever enough to figure this out and do it for us
-            config = new DefaultConfiguration();
-        }
-        catch( NullPointerException noConfig )  {
-            config = new DefaultConfiguration();
-        }
-        
-        //instantiate an elasticsearch client
-       Settings settings = ImmutableSettings.settingsBuilder().build();
-        esclient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress( server, 9300));
-        try  {
-            
-            CreateIndexRequestBuilder createIndexRequestBuilder = esclient.admin().indices().prepareCreate( index );
-            createIndexRequestBuilder.execute().actionGet();
-        }
-        catch( Throwable t )    {
-            //do nothing, we may get an IndexAlreadyExistsException, but don't care about that, here and now
-        }        
-    }
-        
-    
-    
-    
-    /**
-     * 
-     * @return  AbstractCore - a Core instance
-     */
-    public static  AbstractCore getInstance()  {
-     if( singleton == null ) singleton = new AbstractCore();
-        return singleton;
-            
-    }
-    
-    
-     /**
-     * 
-     * @param obituary The obituary for a consumer, whose thread has just died. 
-     * We use it to get to the rest of our consumer's associated plugin information, 
-     * and properly terminate both the plugin and its producer thread. 
-     * If the plugin does not terminate properly within a standard waiting period, 
-     * we force it stop. 
-     */
-    public void callBack( Obituary obituary ) {
-        UbicityPlugin p = obituary.getPlugin();
-        plugins.get( p ).destroy();
-        plugins.remove( p );
-        p = null;
-        obituary = null;
-    }
-    
-    
-    /**
-     * 
-     * @param _plugin The plugin to register. A Plugin **MUST** call this method in order to be recognized by the Core
-     * and benefit from its access to elasticsearch. It **IS** possible to run as a plugin without calling this method; 
-     * the plugin is then, basically, an isolated POJO or - if it wishes to implement the Runnable interface - an isolated Thread with
-     * the same JVM as the Core.
-     * @return true if registering went OK, false in case of a problem.
-     */
-    public final boolean register( UbicityPlugin _plugin ) {
-        try {
-            PluginContext context = new PluginContext( esclient, _plugin );
-            _plugin.setContext( context );
-            plugins.put( _plugin, context );
-            return true;
-        }
-        catch( Exception e )    {
-            logger.warning( "caught an exception while trying to register plugin " + _plugin.getName() + " : " + e.toString() );
-            return false;
-        }
-        catch( Error ee )   {
-            logger.severe( "caught an error while trying to register plugin " + _plugin.getName() + ": " + ee.toString() );
-            return false;
-        }
-        
-    }
-    
-    
-   /**
-     * Offer more than 1 JSONObject simultaneously. 
-     * @param _json 
-     * @param _pC   
-     */
-    public final void offerBulk( JSONObject[] _json, PluginContext _pC )    {
-        _pC.getAssociatedProducer().offer( _json );
-    }
+	protected final Map<UbicityAddOn, AddOnContext> addOns = new HashMap();
 
-    @Override
-    public void run() {
-        
-    }
-        
-    
-    
-    public Answer forward( Command _command )   {
-        return Answer.ACK;
-    }
-    
-    
+	// our elasticsearch indexing client
+	protected static final TransportClient esclient;
+
+	// the Core's own configuration. Static, as Core implements the Singleton
+	// pattern
+	protected static Configuration config;
+
+	// this object is doing actual plugin management for us ( at least the
+	// loading & instantiation part )
+	protected final PluginManager pluginManager = PluginManagerFactory
+			.createPluginManager();
+
+	// the place where the PluginManager is supposed to ( cyclically ) look for
+	// new plugins being dumped, in .jar form
+	protected final URI pluginURI = new File(Constants.PLUGIN_DIRECTORY_NAME)
+			.toURI();
+
+	protected static Logger logger;
+
+	public static String server;
+	public static String index;
+	public static String type;
+
+	static {
+
+		logger = Logger.getLogger(AbstractCore.class.getName());
+
+		// get our own Configuration
+		try {
+			// set necessary stuff for us to ueberhaupt be able to work
+			config = new PropertiesConfiguration("core.cfg");
+			server = config.getString("core.elasticsearch.host");
+			index = config.getString("core.elasticsearch.index");
+			type = config.getString("core.elasticsearch.type");
+			logger.info("Core : will index to " + server + ":" + 9200 + "/"
+					+ index + " @type " + type);
+		} catch (ConfigurationException noConfig) {
+			// log this problem and then go along with default configuration
+			logger.warning("Core :: could not configure from core.cfg file [ not found, or there was a problem with it ], trying to revert to DefaultConfiguration  : "
+					+ noConfig.toString());
+			// here, we need not set any fields on our selves,
+			// DefaultConfiguration is clever enough to figure this out and do
+			// it for us
+			config = new DefaultConfiguration();
+		} catch (NullPointerException noConfig) {
+			config = new DefaultConfiguration();
+		}
+
+		// instantiate an elasticsearch client
+		Settings settings = ImmutableSettings.settingsBuilder().build();
+		esclient = new TransportClient(settings)
+				.addTransportAddress(new InetSocketTransportAddress(server,
+						9300));
+		try {
+
+			CreateIndexRequestBuilder createIndexRequestBuilder = esclient
+					.admin().indices().prepareCreate(index);
+			createIndexRequestBuilder.execute().actionGet();
+		} catch (Throwable t) {
+			// do nothing, we may get an IndexAlreadyExistsException, but don't
+			// care about that, here and now
+		}
+	}
+
+	/**
+	 * 
+	 * @return AbstractCore - a Core instance
+	 */
+	public static AbstractCore getInstance() {
+		if (singleton == null)
+			singleton = new AbstractCore();
+		return singleton;
+
+	}
+
+	/**
+	 * 
+	 * @param obituary
+	 *            The obituary for a consumer, whose thread has just died. We
+	 *            use it to get to the rest of our consumer's associated plugin
+	 *            information, and properly terminate both the plugin and its
+	 *            producer thread. If the plugin does not terminate properly
+	 *            within a standard waiting period, we force it stop.
+	 */
+	public void callBack(Obituary obituary) {
+		UbicityPlugin p = obituary.getPlugin();
+		plugins.get(p).destroy();
+		plugins.remove(p);
+		p = null;
+		obituary = null;
+	}
+
+	/**
+	 * 
+	 * @param _plugin
+	 *            The plugin to register. A Plugin **MUST** call this method in
+	 *            order to be recognized by the Core and benefit from its access
+	 *            to elasticsearch. It **IS** possible to run as a plugin
+	 *            without calling this method; the plugin is then, basically, an
+	 *            isolated POJO or - if it wishes to implement the Runnable
+	 *            interface - an isolated Thread with the same JVM as the Core.
+	 * @return true if registering went OK, false in case of a problem.
+	 */
+	public final boolean register(UbicityPlugin _plugin) {
+		try {
+			PluginContext context = new PluginContext(esclient, _plugin);
+			_plugin.setContext(context);
+			plugins.put(_plugin, context);
+			return true;
+		} catch (Exception e) {
+			logger.warning("caught an exception while trying to register plugin "
+					+ _plugin.getName() + " : " + e.toString());
+			return false;
+		} catch (Error ee) {
+			logger.severe("caught an error while trying to register plugin "
+					+ _plugin.getName() + ": " + ee.toString());
+			return false;
+		}
+
+	}
+
+	/**
+	 * Offer more than 1 JSONObject simultaneously.
+	 * 
+	 * @param _json
+	 * @param _pC
+	 */
+	public final void offerBulk(JSONObject[] _json, PluginContext _pC) {
+		_pC.getAssociatedProducer().offer(_json);
+	}
+
+	@Override
+	public void run() {
+
+	}
+
+	public Answer forward(Command _command) {
+		return Answer.ACK;
+	}
+
 }
