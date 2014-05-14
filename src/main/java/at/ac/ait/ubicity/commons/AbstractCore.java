@@ -30,15 +30,10 @@ import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.json.JSONObject;
 
-import at.ac.ait.ubicity.commons.interfaces.UbicityAddOn;
 import at.ac.ait.ubicity.commons.interfaces.UbicityPlugin;
+import at.ac.ait.ubicity.commons.plugin.PluginContext;
 import at.ac.ait.ubicity.commons.protocol.Answer;
 import at.ac.ait.ubicity.commons.protocol.Command;
 
@@ -53,10 +48,8 @@ public class AbstractCore implements Runnable {
 	// here we keep track of currently running plugins
 	protected final Map<UbicityPlugin, PluginContext> plugins = new HashMap<UbicityPlugin, PluginContext>();
 
-	protected final Map<UbicityAddOn, AddOnContext> addOns = new HashMap<UbicityAddOn, AddOnContext>();
-
 	// our elasticsearch indexing client
-	protected static final TransportClient esclient;
+	protected static ESClient client;
 
 	// this object is doing actual plugin management for us ( at least the
 	// loading & instantiation part )
@@ -65,51 +58,29 @@ public class AbstractCore implements Runnable {
 
 	// the place where the PluginManager is supposed to ( cyclically ) look for
 	// new plugins being dumped, in .jar form
-	protected final URI pluginURI = new File(Constants.PLUGIN_DIRECTORY_NAME)
-			.toURI();
+	protected URI pluginURI;
 
-	protected static Logger logger;
+	protected static Logger logger = Logger.getLogger(AbstractCore.class
+			.getName());
 
-	public static String ES_SERVER;
-	public static int ES_SERVER_PORT;
-	public static String ES_INDEX;
-	public static String ES_TYPE;
-
-	static {
-
-		logger = Logger.getLogger(AbstractCore.class.getName());
-
-		Configuration config;
-
-		// get our own Configuration
+	public AbstractCore() {
 		try {
 			// set necessary stuff for us to ueberhaupt be able to work
-			config = new PropertiesConfiguration("core.cfg");
-			ES_SERVER = config.getString("core.elasticsearch.host");
-			ES_SERVER_PORT = config.getInt("core.elasticsearch.host_port");
-			ES_INDEX = config.getString("core.elasticsearch.index");
-			ES_TYPE = config.getString("core.elasticsearch.type");
-			logger.info("Core : will index to " + ES_SERVER + ":"
-					+ ES_SERVER_PORT + "/" + ES_INDEX + " @type " + ES_TYPE);
+			Configuration config = new PropertiesConfiguration("commons.cfg");
+
+			String server = config.getString("commons.elasticsearch.host");
+			int port = config.getInt("commons.elasticsearch.host_port");
+			String cluster = config.getString("commons.elasticsearch.cluster");
+
+			client = new ESClient(server, port, cluster);
+
+			pluginURI = new File(config.getString("commons.plugins.directory"))
+					.toURI();
+
 		} catch (ConfigurationException noConfig) {
 			// log this problem and then go along with default configuration
 			logger.warning("Core :: could not configure from core.cfg file [ not found, or there was a problem with it ], trying to revert to DefaultConfiguration  : "
 					+ noConfig.toString());
-		}
-
-		// instantiate an elasticsearch client
-		Settings settings = ImmutableSettings.settingsBuilder().build();
-		esclient = new TransportClient(settings)
-				.addTransportAddress(new InetSocketTransportAddress(ES_SERVER,
-						ES_SERVER_PORT));
-		try {
-
-			CreateIndexRequestBuilder createIndexRequestBuilder = esclient
-					.admin().indices().prepareCreate(ES_INDEX);
-			createIndexRequestBuilder.execute().actionGet();
-		} catch (Throwable t) {
-			// do nothing, we may get an IndexAlreadyExistsException, but don't
-			// care about that, here and now
 		}
 	}
 
@@ -154,7 +125,7 @@ public class AbstractCore implements Runnable {
 	 */
 	public final boolean register(UbicityPlugin _plugin) {
 		try {
-			PluginContext context = new PluginContext(esclient, _plugin);
+			PluginContext context = new PluginContext(client, _plugin);
 			_plugin.setContext(context);
 			plugins.put(_plugin, context);
 			return true;

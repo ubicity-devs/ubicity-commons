@@ -23,11 +23,11 @@ import java.util.logging.Logger;
 
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.Client;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import at.ac.ait.ubicity.commons.interfaces.UbicityPlugin;
+import at.ac.ait.ubicity.commons.interfaces.UbicityPlugin.PluginConfig;
 
 /**
  *
@@ -40,16 +40,16 @@ public class JSONConsumer implements Runnable {
 
 	private final BlockingQueue<JSONObject> queue;
 
-	private final Client elasticsearchClient;
+	private final ESClient client;
 
-	private static Logger logger = Logger.getLogger(JSONConsumer.class
+	private static final Logger logger = Logger.getLogger(JSONConsumer.class
 			.getName());
 
-	public JSONConsumer(UbicityPlugin _plugin, Client _client,
+	public JSONConsumer(UbicityPlugin _plugin, ESClient _client,
 			BlockingQueue<JSONObject> _queue) {
 		plugin = _plugin;
 		queue = _queue;
-		elasticsearchClient = _client;
+		client = _client;
 	}
 
 	@Override
@@ -60,9 +60,11 @@ public class JSONConsumer implements Runnable {
 				JSONObject json = queue.take();
 				try {
 
-					IndexRequestBuilder indexRequestBuilder = elasticsearchClient
-							.prepareIndex(AbstractCore.ES_INDEX,
-									AbstractCore.ES_TYPE);
+					IndexRequestBuilder indexRequestBuilder = client
+							.getSingleRequestBuilder(plugin
+									.getConfigEntry(PluginConfig.ES_INDEX),
+									plugin.getConfigEntry(PluginConfig.ES_TYPE));
+
 					String __id = new StringBuilder()
 							.append(System.currentTimeMillis())
 							.append(System.nanoTime()).toString();
@@ -82,7 +84,7 @@ public class JSONConsumer implements Runnable {
 					}
 
 				} catch (JSONException somethingWrong) {
-					logger.fine("caught a JSONException : "
+					logger.warning("caught a JSONException : "
 							+ somethingWrong.toString());
 				}
 				if (json instanceof ConsumerPoison)

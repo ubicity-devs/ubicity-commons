@@ -1,4 +1,4 @@
-package at.ac.ait.ubicity.commons;
+package at.ac.ait.ubicity.commons.plugin;
 
 /**
  Copyright (C) 2013  AIT / Austrian Institute of Technology
@@ -18,26 +18,34 @@ package at.ac.ait.ubicity.commons;
  along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import at.ac.ait.ubicity.commons.interfaces.UbicityPlugin;
+import java.util.concurrent.BlockingQueue;
+
+import org.json.JSONObject;
 
 /**
  *
  * @author Jan van Oort
- * @version 0.1
  * 
- *          The obituary ( or "death notice" ) of JSONConsumer, used as a
- *          callback carrier towards the Core.
+ *         Kills a UbicityPlugin by placing a ConsumerPoison into its queue and
+ *         waiting for the plugin's consumer to swallow the poison
  */
-public final class Obituary {
+public class PluginTerminator implements Runnable {
 
-	private final UbicityPlugin plugin;
+	private final JSONObject _cookie;
 
-	public Obituary(UbicityPlugin _plugin) {
-		plugin = _plugin;
+	private final BlockingQueue<JSONObject> queue;
+
+	public PluginTerminator(JSONObject _poison, BlockingQueue<JSONObject> _queue) {
+		_cookie = _poison;
+		queue = _queue;
 	}
 
-	public UbicityPlugin getPlugin() {
-		return plugin;
+	@Override
+	public void run() {
+		try {
+			queue.put(_cookie);
+		} catch (InterruptedException _interrupt) {
+			Thread.interrupted();
+		}
 	}
-
 }
