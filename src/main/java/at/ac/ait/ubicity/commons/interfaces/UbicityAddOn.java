@@ -18,10 +18,6 @@ along with this program. If not, see http://www.gnu.org/licenses/agpl-3.0.html
 
 package at.ac.ait.ubicity.commons.interfaces;
 
-import java.util.SortedSet;
-
-import net.xeoh.plugins.base.Plugin;
-import at.ac.ait.ubicity.commons.addon.JSONObjectHandler;
 
 /**
  *
@@ -32,9 +28,5 @@ import at.ac.ait.ubicity.commons.addon.JSONObjectHandler;
  *
  * @author jan
  */
-public interface UbicityAddOn extends Plugin {
-
-	public SortedSet<Class<? extends JSONObjectHandler>> getDeclaredEventHandlers();
-
-	public boolean shutDown();
+public interface UbicityAddOn extends BaseUbicityPlugin {
 }

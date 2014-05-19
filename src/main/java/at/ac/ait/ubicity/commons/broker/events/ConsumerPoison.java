@@ -1,4 +1,4 @@
-package at.ac.ait.ubicity.commons.plugin;
+package at.ac.ait.ubicity.commons.broker.events;
 
 /**
  Copyright (C) 2013  AIT / Austrian Institute of Technology
@@ -18,34 +18,14 @@ package at.ac.ait.ubicity.commons.plugin;
  along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import java.util.concurrent.BlockingQueue;
-
-import org.json.JSONObject;
-
 /**
  *
- * @author Jan van Oort
- * 
- *         Kills a UbicityPlugin by placing a ConsumerPoison into its queue and
- *         waiting for the plugin's consumer to swallow the poison
+ * @author jan
  */
-public class PluginTerminator implements Runnable {
+public class ConsumerPoison extends EventEntry {
 
-	private final JSONObject _cookie;
-
-	private final BlockingQueue<JSONObject> queue;
-
-	public PluginTerminator(JSONObject _poison, BlockingQueue<JSONObject> _queue) {
-		_cookie = _poison;
-		queue = _queue;
+	public ConsumerPoison() {
+		poisoned = true;
 	}
 
-	@Override
-	public void run() {
-		try {
-			queue.put(_cookie);
-		} catch (InterruptedException _interrupt) {
-			Thread.interrupted();
-		}
-	}
 }

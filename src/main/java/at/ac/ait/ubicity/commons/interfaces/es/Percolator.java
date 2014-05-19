@@ -14,7 +14,8 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
- */package at.ac.ait.ubicity.commons.interfaces;
+ */
+package at.ac.ait.ubicity.commons.interfaces.es;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,8 +26,8 @@ import java.lang.annotation.Target;
  *
  * @author Jan van Oort
  * 
- * This interface represents an elasticsearch Facet. It is here explicitly for use
- * by elasticsearch plugins. 
+ * This interface represents an elasticsearch percolator. It is here explicitly for use 
+ * by ubicity plugins.
  * 
  * This annotation can be used to mark plugin instances which should be initialized at
  * runtime. If you don't annotate your specific Facet implementation with this annotation, nothing will happen.
@@ -34,14 +35,14 @@ import java.lang.annotation.Target;
  * write:<br/><br/>
  * 
  * <code>
- * &#064;Facet<br/>
- * public class MyFacetImpl implements MyFacet { ... } 
+ * &#064;Percolator<br/>
+ * public class MyPercolatorImpl implements MyPercolator { ... } 
  * </code><br/><br/>
  * 
- * In this case, <code>MyFacet</code> has to extend {@link Facet }.
+ * In this case, <code>MyFacet</code> has to extend {@link Percolator }.* 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @ interface Facet {
+public @interface Percolator {
     
 }

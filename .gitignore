@@ -9,3 +9,4 @@ target/
 
 # ignore all hidden files
 .* 
+/target/

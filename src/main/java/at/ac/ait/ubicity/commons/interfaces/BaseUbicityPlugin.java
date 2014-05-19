@@ -1,4 +1,4 @@
-package at.ac.ait.ubicity.commons;
+package at.ac.ait.ubicity.commons.interfaces;
 
 /**
  Copyright (C) 2013  AIT / Austrian Institute of Technology
@@ -18,26 +18,17 @@ package at.ac.ait.ubicity.commons;
  along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import at.ac.ait.ubicity.commons.interfaces.UbicityPlugin;
+import net.xeoh.plugins.base.Plugin;
 
-/**
- *
- * @author Jan van Oort
- * @version 0.1
- * 
- *          The obituary ( or "death notice" ) of JSONConsumer, used as a
- *          callback carrier towards the Core.
- */
-public final class Obituary {
+public interface BaseUbicityPlugin extends Plugin {
 
-	private final UbicityPlugin plugin;
+	@Override
+	public int hashCode();
 
-	public Obituary(UbicityPlugin _plugin) {
-		plugin = _plugin;
-	}
+	@Override
+	public boolean equals(Object o);
 
-	public UbicityPlugin getPlugin() {
-		return plugin;
-	}
+	public String getName();
 
+	public boolean shutdown();
 }

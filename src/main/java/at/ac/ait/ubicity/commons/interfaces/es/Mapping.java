@@ -17,7 +17,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
 
-package at.ac.ait.ubicity.commons.interfaces;
+package at.ac.ait.ubicity.commons.interfaces.es;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
