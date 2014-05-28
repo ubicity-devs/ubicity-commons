@@ -23,6 +23,6 @@ package at.ac.ait.ubicity.commons.interfaces;
  * @author Jan van Oort
  * @version 0.2.1
  */
-public interface UbicityPlugin extends BaseUbicityPlugin, Runnable {
+public interface UbicityPlugin extends BaseUbicityPlugin {
 
 }
