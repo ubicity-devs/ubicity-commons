@@ -30,5 +30,13 @@ public interface BaseUbicityPlugin extends Plugin {
 
 	public String getName();
 
-	public boolean shutdown();
+	/**
+	 * Initialization of the Plugin on startup
+	 */
+	public void init();
+
+	/**
+	 * Method called when shutting down the plugin
+	 */
+	public void shutdown();
 }
