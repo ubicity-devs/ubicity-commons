@@ -65,7 +65,7 @@ public class PropertyLoader {
 
 	String decrypt(String value) {
 
-		if (!value.startsWith(ENC_PREFIX)) {
+		if (value == null || !value.startsWith(ENC_PREFIX)) {
 			return value;
 		}
 
