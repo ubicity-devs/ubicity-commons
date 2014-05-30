@@ -4,7 +4,15 @@ import at.ac.ait.ubicity.commons.broker.events.EventEntry;
 
 import com.lmax.disruptor.EventHandler;
 
-public interface BrokerConsumer extends EventHandler<EventEntry> {
+public abstract class BrokerConsumer implements EventHandler<EventEntry> {
 
-	String getName();
+	public abstract String getName();
+
+	@Override
+	public void onEvent(EventEntry event, long sequence, boolean endOfBatch)
+			throws Exception {
+		onReceived(event);
+	}
+
+	public abstract void onReceived(EventEntry msg);
 }
