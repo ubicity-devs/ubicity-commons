@@ -23,6 +23,21 @@ package at.ac.ait.ubicity.commons.interfaces;
  * @author Jan van Oort
  * @version 0.2.1
  */
-public interface UbicityPlugin extends BaseUbicityPlugin {
+public interface UbicityPlugin {
+	/**
+	 * Returns the name of the plugin
+	 * 
+	 * @return
+	 */
+	String getName();
 
+	/**
+	 * Initialization of the Plugin on startup
+	 */
+	void init();
+
+	/**
+	 * Method called when shutting down the plugin
+	 */
+	void shutdown();
 }
