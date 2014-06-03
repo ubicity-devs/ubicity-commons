@@ -21,13 +21,6 @@ package at.ac.ait.ubicity.commons.interfaces;
 import net.xeoh.plugins.base.Plugin;
 
 public interface BaseUbicityPlugin extends Plugin {
-
-	@Override
-	public int hashCode();
-
-	@Override
-	public boolean equals(Object o);
-
 	/**
 	 * Returns the name of the plugin
 	 * 
