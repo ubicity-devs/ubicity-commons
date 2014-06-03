@@ -28,15 +28,20 @@ public interface BaseUbicityPlugin extends Plugin {
 	@Override
 	public boolean equals(Object o);
 
-	public String getName();
+	/**
+	 * Returns the name of the plugin
+	 * 
+	 * @return
+	 */
+	String getName();
 
 	/**
 	 * Initialization of the Plugin on startup
 	 */
-	public void init();
+	void init();
 
 	/**
 	 * Method called when shutting down the plugin
 	 */
-	public void shutdown();
+	void shutdown();
 }
