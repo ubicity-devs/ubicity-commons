@@ -2,6 +2,7 @@ package at.ac.ait.ubicity.commons.interfaces;
 
 import at.ac.ait.ubicity.commons.protocol.Answer;
 import at.ac.ait.ubicity.commons.protocol.Command;
+import at.ac.ait.ubicity.commons.protocol.Medium;
 
 /**
  *
@@ -9,5 +10,15 @@ import at.ac.ait.ubicity.commons.protocol.Command;
  */
 public interface ReverseControllableMediumPlugin extends UbicityPlugin {
 
-	public Answer execute(Command _command);
+	/**
+	 * @param command
+	 * @return
+	 */
+	public Answer execute(Command command);
+
+	/**
+	 * @param med
+	 * @return
+	 */
+	public boolean isResponsible(Medium med);
 }
