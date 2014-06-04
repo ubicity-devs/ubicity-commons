@@ -1,18 +1,60 @@
 package at.ac.ait.ubicity.commons.broker;
 
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+
+import org.apache.log4j.Logger;
+import org.fusesource.stomp.jms.StompJmsDestination;
+
 import at.ac.ait.ubicity.commons.broker.events.EventEntry;
+import at.ac.ait.ubicity.commons.broker.exceptions.UbicityBrokerException;
 
-import com.lmax.disruptor.EventHandler;
+public abstract class BrokerConsumer extends AbstractBrokerClient implements
+		MessageListener {
 
-public abstract class BrokerConsumer implements EventHandler<EventEntry> {
+	private static final Logger logger = Logger.getLogger(BrokerConsumer.class);
 
-	public abstract String getName();
+	protected abstract void onReceived(EventEntry msg);
 
 	@Override
-	public void onEvent(EventEntry event, long sequence, boolean endOfBatch)
-			throws Exception {
-		onReceived(event);
+	public void onMessage(Message message) {
+		if (TextMessage.class.isInstance(message)) {
+			TextMessage tMsg = (TextMessage) message;
+			try {
+				onReceived(new EventEntry(tMsg.getText()));
+			} catch (JMSException e) {
+				logger.warn("on Message caught exc.", e);
+			}
+		} else {
+			logger.warn("Ignored message of type "
+					+ message.getClass().getSimpleName());
+		}
 	}
 
-	public abstract void onReceived(EventEntry msg);
+	/**
+	 * Sets the messagelistener and the given destination
+	 * (topic/queue/wildcard/...)
+	 * 
+	 * @param listener
+	 * @param dest
+	 * @throws UbicityBrokerException
+	 * @throws JMSException
+	 */
+	protected void setConsumer(MessageListener listener, String dest)
+			throws UbicityBrokerException {
+
+		try {
+			Destination destination = StompJmsDestination.createDestination(
+					getConnection(), dest);
+			MessageConsumer consumer = getSession().createConsumer(destination);
+
+			consumer.setMessageListener(listener);
+		} catch (JMSException e) {
+			throw new UbicityBrokerException(e);
+		}
+	}
 }

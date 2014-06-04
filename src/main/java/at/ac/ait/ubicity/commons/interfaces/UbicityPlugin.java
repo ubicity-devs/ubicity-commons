@@ -1,5 +1,7 @@
 package at.ac.ait.ubicity.commons.interfaces;
 
+import net.xeoh.plugins.base.Plugin;
+
 /**
  Copyright (C) 2013  AIT / Austrian Institute of Technology
  http://www.ait.ac.at
@@ -23,7 +25,7 @@ package at.ac.ait.ubicity.commons.interfaces;
  * @author Jan van Oort
  * @version 0.2.1
  */
-public interface UbicityPlugin {
+public interface UbicityPlugin extends Plugin {
 	/**
 	 * Returns the name of the plugin
 	 * 

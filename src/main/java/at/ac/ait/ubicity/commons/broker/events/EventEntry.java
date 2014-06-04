@@ -1,74 +1,46 @@
 package at.ac.ait.ubicity.commons.broker.events;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
+import java.util.HashMap;
 
-public class EventEntry {
+import org.apache.log4j.Logger;
 
-	private String id;
-	private String data;
-	private int curSequence = 0;
+import com.google.gson.Gson;
 
-	protected boolean poisoned;
+public class EventEntry implements Serializable {
+	private static final long serialVersionUID = -5123460570794468542L;
 
-	private long createdTs;
+	private static Gson gson = new Gson();
 
-	private List<Metadata> metadata;
-
-	public EventEntry() {
-		this.createdTs = System.currentTimeMillis();
+	public enum Property {
+		ID, ES_INDEX, ES_TYPE
 	}
 
-	public EventEntry(String id, List<Metadata> metadata, String data) {
-		this();
-		this.id = id;
-		this.data = data;
-		this.metadata = metadata;
+	private HashMap<Property, String> header = new HashMap<Property, String>();
+	private String body = "";
+
+	final static Logger logger = Logger.getLogger(EventEntry.class);
+
+	public EventEntry(HashMap<Property, String> header, String body) {
+		this.header = header;
+		this.body = body;
 	}
 
-	public EventEntry(String id, Metadata metadata, String data) {
-		this(id, Arrays.asList(metadata), data);
+	public EventEntry(String jsonString) {
+		EventEntry e = gson.fromJson(jsonString, this.getClass());
+		this.header = e.header;
+		this.body = e.body;
 	}
 
-	public String getId() {
-		return this.id;
+	public HashMap<Property, String> getHeader() {
+		return this.header;
 	}
 
-	public String getData() {
-		return this.data;
+	public String getBody() {
+		return this.body;
 	}
 
-	public void incSequence() {
-		curSequence++;
-	}
-
-	public List<Metadata> getCurrentMetadata() {
-
-		List<Metadata> curMeta = new ArrayList<Metadata>();
-
-		for (int i = 0; i < metadata.size(); i++) {
-			if (metadata.get(i).getSequence() == curSequence) {
-				curMeta.add(metadata.get(i));
-			}
-		}
-		return curMeta;
-	}
-
-	public void copy(EventEntry entry) {
-		this.id = entry.id;
-		this.poisoned = entry.poisoned;
-		this.curSequence = entry.curSequence;
-		this.data = entry.data;
-		this.metadata = entry.metadata;
-		this.createdTs = entry.createdTs;
-	}
-
-	public boolean isPoisoned() {
-		return poisoned;
-	}
-
-	public long getCreatedTs() {
-		return this.createdTs;
+	public String toJson() {
+		return gson.toJson(this);
 	}
 }
