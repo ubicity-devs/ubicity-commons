@@ -3,7 +3,6 @@ package at.ac.ait.ubicity.commons.broker;
 import java.util.HashMap;
 import java.util.UUID;
 
-import at.ac.ait.ubicity.commons.broker.BrokerProducer;
 import at.ac.ait.ubicity.commons.broker.events.EventEntry;
 import at.ac.ait.ubicity.commons.broker.events.EventEntry.Property;
 import at.ac.ait.ubicity.commons.broker.exceptions.UbicityBrokerException;
@@ -12,7 +11,8 @@ public class SimpleProducer extends BrokerProducer {
 
 	public SimpleProducer() throws UbicityBrokerException {
 		super.init("", "");
-		setProducer("/queue/ES.TEST");
+		setProducer("/topic/DEMO.TEST");
+		// setProducer("/queue/DEMO.TEST");
 	}
 
 	public void publish() throws UbicityBrokerException {
