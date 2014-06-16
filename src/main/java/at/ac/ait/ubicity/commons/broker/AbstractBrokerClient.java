@@ -14,6 +14,7 @@ public abstract class AbstractBrokerClient {
 
 	private StompJmsConnection connection;
 	private Session session;
+	protected String destinationPrefix;
 
 	private static final Logger logger = Logger
 			.getLogger(AbstractBrokerClient.class);
@@ -28,6 +29,8 @@ public abstract class AbstractBrokerClient {
 	protected void init(String user, String pwd) throws UbicityBrokerException {
 		PropertyLoader config = new PropertyLoader(
 				AbstractBrokerClient.class.getResource("/broker_client.cfg"));
+
+		destinationPrefix = config.getString("addon.apollo.dest.prefix");
 
 		StompJmsConnectionFactory factory = new StompJmsConnectionFactory();
 		factory.setBrokerURI(config.getString("addon.apollo.client.host"));
