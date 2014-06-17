@@ -49,7 +49,7 @@ public abstract class BrokerConsumer extends AbstractBrokerClient implements
 
 		try {
 			Destination destination = StompJmsDestination.createDestination(
-					getConnection(), destinationPrefix + dest);
+					getConnection(), calcDestination(dest));
 			MessageConsumer consumer = getSession().createConsumer(destination);
 
 			consumer.setMessageListener(listener);

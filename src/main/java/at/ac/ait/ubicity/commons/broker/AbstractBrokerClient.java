@@ -14,7 +14,7 @@ public abstract class AbstractBrokerClient {
 
 	private StompJmsConnection connection;
 	private Session session;
-	protected String destinationPrefix;
+	private String destinationPrefix;
 
 	private static final Logger logger = Logger
 			.getLogger(AbstractBrokerClient.class);
@@ -47,7 +47,9 @@ public abstract class AbstractBrokerClient {
 
 	public void shutdown() {
 		try {
-			connection.close();
+			if (connection != null) {
+				connection.close();
+			}
 		} catch (JMSException e) {
 			logger.warn("Close connection threw exception ", e);
 		}
@@ -59,5 +61,12 @@ public abstract class AbstractBrokerClient {
 
 	protected StompJmsConnection getConnection() {
 		return this.connection;
+	}
+
+	protected String calcDestination(String destination) {
+		String dest = destination.toLowerCase();
+		dest = dest.replace("/topic/", "/topic/" + destinationPrefix);
+		dest = dest.replace("/queue/", "/queue/" + destinationPrefix);
+		return dest;
 	}
 }

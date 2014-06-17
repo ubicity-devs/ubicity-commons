@@ -29,7 +29,7 @@ public abstract class BrokerProducer extends AbstractBrokerClient {
 		Destination destination;
 		try {
 			destination = StompJmsDestination.createDestination(
-					getConnection(), destinationPrefix + dest);
+					getConnection(), calcDestination(dest));
 			producer = getSession().createProducer(destination);
 			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 		} catch (JMSException e) {
