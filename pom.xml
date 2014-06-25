@@ -38,6 +38,11 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
+			<groupId>at.ac.ait.ubicity</groupId>
+			<artifactId>ubicity-contracts</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.2.4</version>
