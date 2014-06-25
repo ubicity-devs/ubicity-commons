@@ -30,10 +30,13 @@ public abstract class AbstractBrokerClient {
 		PropertyLoader config = new PropertyLoader(
 				AbstractBrokerClient.class.getResource("/broker_client.cfg"));
 
-		destinationPrefix = config.getString("addon.apollo.dest.prefix");
+		destinationPrefix = config.getString("env.apollo.dest.prefix");
+
+		String host = config.getString("plugin.apollo.client.host");
+		host = host + ":" + config.getString("env.apollo.broker.tcp.port");
 
 		StompJmsConnectionFactory factory = new StompJmsConnectionFactory();
-		factory.setBrokerURI(config.getString("addon.apollo.client.host"));
+		factory.setBrokerURI(host);
 
 		try {
 			connection = (StompJmsConnection) factory.createConnection(user,
