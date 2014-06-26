@@ -8,7 +8,7 @@ import at.ac.ait.ubicity.commons.protocol.Medium;
  *
  * @author jan van oort
  */
-public interface ReverseControllableMediumPlugin extends UbicityPlugin {
+public interface JiTPlugin extends UbicityPlugin {
 
 	/**
 	 * @param command
