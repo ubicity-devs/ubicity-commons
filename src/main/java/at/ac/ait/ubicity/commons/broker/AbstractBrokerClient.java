@@ -66,10 +66,19 @@ public abstract class AbstractBrokerClient {
 		return this.connection;
 	}
 
+	/**
+	 * Add defined destination prefix to all topics or queues.
+	 * 
+	 * @param destination
+	 * @return
+	 */
 	protected String calcDestination(String destination) {
 		String dest = destination.toLowerCase();
 		dest = dest.replace("/topic/", "/topic/" + destinationPrefix);
 		dest = dest.replace("/queue/", "/queue/" + destinationPrefix);
+		dest = dest.replace("/temp-topic/", "/temp-topic/" + destinationPrefix);
+		dest = dest.replace("/temp-queue/", "/temp-queue/" + destinationPrefix);
+		dest = dest.replace("/dsub/", "/dsub/" + destinationPrefix);
 		return dest;
 	}
 }
