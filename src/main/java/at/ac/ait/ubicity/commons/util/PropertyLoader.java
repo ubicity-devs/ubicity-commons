@@ -20,19 +20,27 @@ public class PropertyLoader {
 
 	private static Key encrKey = null;
 
-	private Cipher cipher = null;
+	private static Cipher cipher = null;
 
 	private static final String ENC_PREFIX = "encr:";
 
 	final static Logger logger = Logger.getLogger(PropertyLoader.class);
 
 	public PropertyLoader(URL file) {
-
+		this();
 		try {
-			cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
 			config = new PropertiesConfiguration(file);
 		} catch (ConfigurationException noConfig) {
 			logger.fatal("Configuration not found! " + noConfig.toString());
+		}
+	}
+
+	PropertyLoader() {
+		try {
+			if (cipher == null) {
+				setEncrKey(System.getProperty("ubicity.enc_key"));
+				cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+			}
 		} catch (Exception e) {
 			logger.error("Exc caught in gettign cipher instance", e);
 		}
@@ -81,15 +89,21 @@ public class PropertyLoader {
 			cipher.init(Cipher.ENCRYPT_MODE, encrKey);
 
 			encText = ENC_PREFIX
-					+ Base64.getEncoder().encode(
-							cipher.doFinal(value.getBytes("UTF-8")));
+					+ new String(Base64.getEncoder().encode(
+							cipher.doFinal(value.getBytes("UTF-8"))));
 		} catch (Exception e) {
 			logger.error("Exc caught in encrypting", e);
 		}
 		return encText;
 	}
 
-	public static void setEncrKey(String key) {
+	void setEncrKey(String key) {
+
+		if (key == null) {
+			logger.error("Encryption key is null - exiting");
+			return;
+		}
+
 		MessageDigest sha = null;
 		byte[] byteKey;
 		try {

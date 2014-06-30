@@ -1,20 +1,26 @@
 package at.ac.ait.ubicity.commons.util;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class PropertyLoaderTest {
 
 	@Test
-	public void test() {
+	public void encTest() {
+		System.setProperty("ubicity.enc_key", "<key>");
+		PropertyLoader loader = new PropertyLoader();
+		assertEquals("test", loader.decrypt(loader.encrypt("test")));
+	}
 
-		PropertyLoader prop = new PropertyLoader(null);
+	@Test
+	@Ignore
+	public void printEncText() {
+		System.setProperty("ubicity.enc_key", "<key>");
 
-		PropertyLoader.setEncrKey("Test");
+		PropertyLoader loader = new PropertyLoader();
 
-		String encr = prop.encrypt("My message");
-		System.out.println(encr);
-
-		String dec = prop.decrypt(encr);
-		System.out.println(dec);
+		System.out.println(loader.encrypt("test"));
 	}
 }
