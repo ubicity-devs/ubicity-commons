@@ -13,7 +13,7 @@ public class EventEntry implements Serializable {
 	private static Gson gson = new Gson();
 
 	public enum Property {
-		ID, ES_INDEX, ES_TYPE
+		ID, ES_INDEX, ES_TYPE, CB_BUCKET
 	}
 
 	private HashMap<Property, String> header = new HashMap<Property, String>();

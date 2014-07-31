@@ -73,12 +73,12 @@ public abstract class AbstractBrokerClient {
 	 * @return
 	 */
 	protected String calcDestination(String destination) {
-		String dest = destination.toLowerCase();
-		dest = dest.replace("/topic/", "/topic/" + destinationPrefix);
-		dest = dest.replace("/queue/", "/queue/" + destinationPrefix);
-		dest = dest.replace("/temp-topic/", "/temp-topic/" + destinationPrefix);
-		dest = dest.replace("/temp-queue/", "/temp-queue/" + destinationPrefix);
-		dest = dest.replace("/dsub/", "/dsub/" + destinationPrefix);
+		String dest = destination.toUpperCase();
+		dest = dest.replace("/TOPIC/", "/topic/" + destinationPrefix);
+		dest = dest.replace("/QUEUE/", "/queue/" + destinationPrefix);
+		dest = dest.replace("/TEMP-TOPIC/", "/temp-topic/" + destinationPrefix);
+		dest = dest.replace("/TEMP-QUEUE/", "/temp-queue/" + destinationPrefix);
+		dest = dest.replace("/DSUB/", "/dsub/" + destinationPrefix);
 		return dest;
 	}
 }
