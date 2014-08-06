@@ -2,7 +2,6 @@ package at.ac.ait.ubicity.commons.broker;
 
 import org.apache.log4j.Logger;
 
-import at.ac.ait.ubicity.commons.broker.BrokerConsumer;
 import at.ac.ait.ubicity.commons.broker.events.EventEntry;
 import at.ac.ait.ubicity.commons.broker.exceptions.UbicityBrokerException;
 
@@ -16,8 +15,8 @@ public class SimpleConsumer extends BrokerConsumer {
 	}
 
 	@Override
-	protected void onReceived(EventEntry msg) {
-		logger.info("Received: " + msg.getBody());
+	protected void onReceived(String destination, EventEntry msg) {
+		logger.info("Received from '" + destination + "': " + msg.getBody());
 	}
 
 	/**
