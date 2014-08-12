@@ -19,6 +19,11 @@ public class SimpleConsumer extends BrokerConsumer {
 		logger.info("Received from '" + destination + "': " + msg.getBody());
 	}
 
+	@Override
+	protected void onReceivedRaw(String destination, String tmsg) {
+		// Not used here
+	}
+
 	/**
 	 * Mainly here for debugging purposes.
 	 * 

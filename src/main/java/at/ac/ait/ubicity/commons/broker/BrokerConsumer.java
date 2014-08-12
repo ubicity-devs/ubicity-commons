@@ -18,7 +18,11 @@ public abstract class BrokerConsumer extends AbstractBrokerClient implements
 
 	private static final Logger logger = Logger.getLogger(BrokerConsumer.class);
 
+	protected boolean receiveRaw = false;
+
 	protected abstract void onReceived(String destination, EventEntry msg);
+
+	protected abstract void onReceivedRaw(String destination, String tmsg);
 
 	@Override
 	public void onMessage(Message message) {
@@ -26,7 +30,13 @@ public abstract class BrokerConsumer extends AbstractBrokerClient implements
 			TextMessage tMsg = (TextMessage) message;
 			try {
 				String dest = message.getJMSDestination().toString();
-				onReceived(dest, new EventEntry(tMsg.getText()));
+
+				if (receiveRaw) {
+					onReceivedRaw(dest, tMsg.getText());
+				} else {
+					onReceived(dest, new EventEntry(tMsg.getText()));
+				}
+
 			} catch (JMSException e) {
 				logger.warn("on Message caught exc.", e);
 			}
