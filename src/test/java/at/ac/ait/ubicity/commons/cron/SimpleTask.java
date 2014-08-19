@@ -2,7 +2,7 @@ package at.ac.ait.ubicity.commons.cron;
 
 import java.util.Date;
 
-public class SimpleTask extends AbstractJob {
+public class SimpleTask extends AbstractTask {
 
 	@Override
 	public String getName() {

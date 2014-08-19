@@ -1,9 +1,6 @@
 package at.ac.ait.ubicity.commons.cron;
 
 import java.util.Arrays;
-import java.util.List;
-
-import at.ac.ait.ubicity.commons.interfaces.CronTask;
 
 public class SimpleCronPlugin extends AbstractCronPlugin {
 
@@ -18,14 +15,15 @@ public class SimpleCronPlugin extends AbstractCronPlugin {
 
 	@Override
 	public void init() {
+		try {
+			initCron(Arrays.asList(new SimpleTask()));
+		} catch (UbicityCronException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void shutdown() {
-	}
-
-	@Override
-	public List<CronTask> getJobs() {
-		return Arrays.asList(new SimpleTask());
 	}
 }

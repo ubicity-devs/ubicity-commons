@@ -2,6 +2,8 @@ package at.ac.ait.ubicity.commons.interfaces;
 
 import java.util.List;
 
+import at.ac.ait.ubicity.commons.cron.UbicityCronException;
+
 /**
  * Interface for time triggered plugins
  * 
@@ -10,10 +12,5 @@ import java.util.List;
  */
 public interface CronPlugin extends UbicityPlugin {
 
-	/**
-	 * List of all Jobs to be executed.
-	 * 
-	 * @return
-	 */
-	List<CronTask> getJobs();
+	void initCron(List<CronTask> tasks) throws UbicityCronException;
 }

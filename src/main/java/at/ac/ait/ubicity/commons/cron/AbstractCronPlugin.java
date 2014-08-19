@@ -1,6 +1,7 @@
 package at.ac.ait.ubicity.commons.cron;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.quartz.CronExpression;
@@ -26,20 +27,23 @@ public abstract class AbstractCronPlugin implements CronPlugin {
 	private static SchedulerFactory sf = new StdSchedulerFactory();
 	private Scheduler sched;
 
-	protected AbstractCronPlugin() throws UbicityCronException {
+	@Override
+	public void initCron(List<CronTask> tasks) throws UbicityCronException {
 		try {
 			sched = sf.getScheduler();
 			if (!sched.isStarted()) {
 				sched.start();
 			}
 
-			for (CronTask task : this.getJobs()) {
+			for (CronTask task : tasks) {
 
 				String key = this.getName() + "-" + task.getName();
 
 				if (!sched.checkExists(JobKey.jobKey(key))) {
 					JobDetail job = JobBuilder.newJob(task.getClass())
 							.withIdentity(JobKey.jobKey(key)).build();
+
+					job.getJobDataMap().putAll(task.getProperties());
 
 					TriggerBuilder<Trigger> tb = TriggerBuilder.newTrigger();
 					tb.withSchedule(CronScheduleBuilder
