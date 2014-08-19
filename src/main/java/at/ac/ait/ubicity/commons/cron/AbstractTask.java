@@ -9,6 +9,7 @@ import at.ac.ait.ubicity.commons.interfaces.CronTask;
 
 public abstract class AbstractTask implements CronTask {
 
+	private String name;
 	private String timeInterval;
 	private final HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -24,6 +25,16 @@ public abstract class AbstractTask implements CronTask {
 	 */
 	@Override
 	public abstract void executeTask();
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	@Override
 	public String getTimeInterval() {

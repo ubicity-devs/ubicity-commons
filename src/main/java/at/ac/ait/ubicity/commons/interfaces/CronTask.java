@@ -14,6 +14,8 @@ public interface CronTask extends Job {
 
 	String getName();
 
+	void setName(String name);
+
 	/**
 	 * String representation of cron trigger.
 	 * 
