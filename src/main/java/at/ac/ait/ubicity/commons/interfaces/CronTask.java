@@ -1,6 +1,6 @@
 package at.ac.ait.ubicity.commons.interfaces;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.quartz.Job;
 
@@ -57,7 +57,7 @@ public interface CronTask extends Job {
 	 * @param key
 	 * @return
 	 */
-	HashMap<String, Object> getProperties();
+	Map<String, Object> getProperties();
 
 	/**
 	 * Actual implementation of the task.

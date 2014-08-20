@@ -2,14 +2,16 @@ package at.ac.ait.ubicity.commons.cron;
 
 import java.util.HashMap;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.PersistJobDataAfterExecution;
 
 import at.ac.ait.ubicity.commons.interfaces.CronTask;
 
+@DisallowConcurrentExecution
+@PersistJobDataAfterExecution
 public abstract class AbstractTask implements CronTask {
-
-	private String name;
 	private String timeInterval;
 	private final HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -18,6 +20,9 @@ public abstract class AbstractTask implements CronTask {
 
 		map.putAll(ctx.getJobDetail().getJobDataMap().getWrappedMap());
 		executeTask();
+
+		// Write back the map to context
+		ctx.getJobDetail().getJobDataMap().putAll(map);
 	}
 
 	/**
@@ -28,12 +33,12 @@ public abstract class AbstractTask implements CronTask {
 
 	@Override
 	public String getName() {
-		return this.name;
+		return (String) map.get("name");
 	}
 
 	@Override
 	public void setName(String name) {
-		this.name = name;
+		map.put("name", name);
 	}
 
 	@Override
