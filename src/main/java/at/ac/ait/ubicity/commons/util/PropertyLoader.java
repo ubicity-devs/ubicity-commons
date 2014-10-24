@@ -100,7 +100,7 @@ public class PropertyLoader {
 	void setEncrKey(String key) {
 
 		if (key == null) {
-			logger.error("Encryption key is null - exiting");
+			logger.error("Encryption key is null - Not able to decrypt property keys");
 			return;
 		}
 
