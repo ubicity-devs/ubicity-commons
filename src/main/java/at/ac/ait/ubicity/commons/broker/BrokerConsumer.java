@@ -20,8 +20,20 @@ public abstract class BrokerConsumer extends AbstractBrokerClient implements
 
 	protected boolean receiveRaw = false;
 
+	/**
+	 * Message entry is converted to EventEntry class.
+	 * 
+	 * @param destination
+	 * @param msg
+	 */
 	protected abstract void onReceived(String destination, EventEntry msg);
 
+	/**
+	 * Message entry is returned in raw format without modification.
+	 * 
+	 * @param destination
+	 * @param tmsg
+	 */
 	protected abstract void onReceivedRaw(String destination, String tmsg);
 
 	@Override
