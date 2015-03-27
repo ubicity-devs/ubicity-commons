@@ -1,8 +1,7 @@
 package at.ac.ait.ubicity.commons.interfaces;
 
-import at.ac.ait.ubicity.commons.protocol.Answer;
-import at.ac.ait.ubicity.commons.protocol.Command;
-import at.ac.ait.ubicity.commons.protocol.Medium;
+import at.ac.ait.ubicity.commons.jit.Action;
+import at.ac.ait.ubicity.commons.jit.Answer;
 
 /**
  *
@@ -11,14 +10,10 @@ import at.ac.ait.ubicity.commons.protocol.Medium;
 public interface JiTPlugin extends UbicityPlugin {
 
 	/**
-	 * @param command
-	 * @return
+	 * Execute received action.
+	 * 
+	 * @param action
+	 * @return {Answer}
 	 */
-	public Answer execute(Command command);
-
-	/**
-	 * @param med
-	 * @return
-	 */
-	public boolean isResponsible(Medium med);
+	public Answer process(Action action);
 }
