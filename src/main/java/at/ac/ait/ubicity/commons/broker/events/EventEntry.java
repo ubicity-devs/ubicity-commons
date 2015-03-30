@@ -15,8 +15,8 @@ public class EventEntry implements Serializable {
 		ID, ES_INDEX, ES_TYPE, CB_BUCKET
 	}
 
-	HashMap<Property, String> header = new HashMap<Property, String>();
-	String body = "";
+	private HashMap<Property, String> header = new HashMap<Property, String>();
+	private final String body;
 
 	public EventEntry(HashMap<Property, String> header, String body) {
 		this.header = header;

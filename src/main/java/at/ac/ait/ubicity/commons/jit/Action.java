@@ -28,15 +28,11 @@ public class Action {
 
 	private static Gson gson = new GsonBuilder().create();
 
-	private final String receiver;
-	private final String command;
-	private final String data;
+	private String receiver;
+	private String command;
+	private String data;
 
-	public Action(String action) {
-		Action a = gson.fromJson(action, this.getClass());
-		this.receiver = a.getReceiver();
-		this.command = a.getCommand();
-		this.data = a.getData();
+	public Action() {
 	}
 
 	public Action(String receiver, String command, String data) {
@@ -59,5 +55,17 @@ public class Action {
 
 	public String toJson() {
 		return gson.toJson(this);
+	}
+
+	public void setReceiver(String receiver) {
+		this.receiver = receiver;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
+	}
+
+	public void setData(String data) {
+		this.data = data;
 	}
 }

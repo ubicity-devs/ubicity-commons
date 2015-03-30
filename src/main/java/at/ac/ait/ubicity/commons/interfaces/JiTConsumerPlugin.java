@@ -7,7 +7,7 @@ import at.ac.ait.ubicity.commons.jit.Answer;
  *
  * @author jan van oort
  */
-public interface JiTPlugin extends UbicityPlugin {
+public interface JiTConsumerPlugin extends UbicityPlugin {
 
 	/**
 	 * Execute received action.

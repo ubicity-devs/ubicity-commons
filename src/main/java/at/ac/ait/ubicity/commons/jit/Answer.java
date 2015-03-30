@@ -29,11 +29,14 @@ public final class Answer {
 		NOT_RESPONSIBLE, COMMAND_NOT_RECOGNIZED
 	};
 
-	private final Status status;
+	private Status status;
 
-	private final Action action;
+	private Action action;
 
-	private final String data;
+	private String data;
+
+	public Answer() {
+	}
 
 	public Answer(Action action, Status status, String data) {
 		this.action = action;
@@ -59,5 +62,17 @@ public final class Answer {
 
 	public Status getStatus() {
 		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public void setAction(Action action) {
+		this.action = action;
+	}
+
+	public void setData(String data) {
+		this.data = data;
 	}
 }
