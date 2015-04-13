@@ -35,6 +35,14 @@ public class Action {
 	public Action() {
 	}
 
+	public Action(String action) {
+		Action a = gson.fromJson(action, this.getClass());
+
+		this.receiver = a.getReceiver();
+		this.command = a.getCommand();
+		this.data = a.getData();
+	}
+
 	public Action(String receiver, String command, String data) {
 		this.receiver = receiver;
 		this.command = command;
