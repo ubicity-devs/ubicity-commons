@@ -11,10 +11,10 @@ import org.apache.log4j.Logger;
 import org.fusesource.stomp.jms.StompJmsDestination;
 
 import at.ac.ait.ubicity.commons.broker.events.EventEntry;
-import at.ac.ait.ubicity.commons.broker.exceptions.UbicityBrokerException;
+import at.ac.ait.ubicity.commons.exceptions.UbicityBrokerException;
+import at.ac.ait.ubicity.commons.exceptions.UbicityException;
 
-public abstract class BrokerConsumer extends AbstractBrokerClient implements
-		MessageListener {
+public abstract class BrokerConsumer extends AbstractBrokerClient implements MessageListener {
 
 	private static final Logger logger = Logger.getLogger(BrokerConsumer.class);
 
@@ -49,30 +49,26 @@ public abstract class BrokerConsumer extends AbstractBrokerClient implements
 					onReceived(dest, new EventEntry(tMsg.getText()));
 				}
 
-			} catch (JMSException e) {
+			} catch (JMSException | UbicityException e) {
 				logger.warn("on Message caught exc.", e);
 			}
 		} else {
-			logger.warn("Ignored message of type "
-					+ message.getClass().getSimpleName());
+			logger.warn("Ignored message of type " + message.getClass().getSimpleName());
 		}
 	}
 
 	/**
-	 * Sets the messagelistener and the given destination
-	 * (topic/queue/wildcard/...)
+	 * Sets the messagelistener and the given destination (topic/queue/wildcard/...)
 	 * 
 	 * @param listener
 	 * @param dest
 	 * @throws UbicityBrokerException
 	 * @throws JMSException
 	 */
-	protected void setConsumer(MessageListener listener, String dest)
-			throws UbicityBrokerException {
+	protected void setConsumer(MessageListener listener, String dest) throws UbicityBrokerException {
 
 		try {
-			Destination destination = StompJmsDestination.createDestination(
-					getConnection(), calcDestination(dest));
+			Destination destination = StompJmsDestination.createDestination(getConnection(), calcDestination(dest));
 			MessageConsumer consumer = getSession().createConsumer(destination);
 
 			consumer.setMessageListener(listener);

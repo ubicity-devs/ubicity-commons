@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.fusesource.stomp.jms.StompJmsConnection;
 import org.fusesource.stomp.jms.StompJmsConnectionFactory;
 
-import at.ac.ait.ubicity.commons.broker.exceptions.UbicityBrokerException;
+import at.ac.ait.ubicity.commons.exceptions.UbicityBrokerException;
 import at.ac.ait.ubicity.commons.util.PropertyLoader;
 
 public abstract class AbstractBrokerClient {
@@ -16,8 +16,7 @@ public abstract class AbstractBrokerClient {
 	private Session session;
 	private String destinationPrefix;
 
-	private static final Logger logger = Logger
-			.getLogger(AbstractBrokerClient.class);
+	private static final Logger logger = Logger.getLogger(AbstractBrokerClient.class);
 
 	/**
 	 * Sets up the Broker connection with configured username & password.
@@ -27,8 +26,7 @@ public abstract class AbstractBrokerClient {
 	 * @throws UbicityBrokerException
 	 */
 	protected void init(String user, String pwd) throws UbicityBrokerException {
-		PropertyLoader config = new PropertyLoader(
-				AbstractBrokerClient.class.getResource("/broker_client.cfg"));
+		PropertyLoader config = new PropertyLoader(AbstractBrokerClient.class.getResource("/broker_client.cfg"));
 
 		destinationPrefix = config.getString("env.apollo.dest.prefix");
 
@@ -39,8 +37,7 @@ public abstract class AbstractBrokerClient {
 		factory.setBrokerURI(host);
 
 		try {
-			connection = (StompJmsConnection) factory.createConnection(user,
-					pwd);
+			connection = (StompJmsConnection) factory.createConnection(user, pwd);
 			connection.start();
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 		} catch (JMSException e) {
@@ -48,7 +45,7 @@ public abstract class AbstractBrokerClient {
 		}
 	}
 
-	public void shutdown() {
+	protected void shutdown() {
 		try {
 			if (connection != null) {
 				connection.close();

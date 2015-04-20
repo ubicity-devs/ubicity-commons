@@ -3,7 +3,7 @@ package at.ac.ait.ubicity.commons.broker;
 import org.apache.log4j.Logger;
 
 import at.ac.ait.ubicity.commons.broker.events.EventEntry;
-import at.ac.ait.ubicity.commons.broker.exceptions.UbicityBrokerException;
+import at.ac.ait.ubicity.commons.exceptions.UbicityBrokerException;
 
 public class SimpleConsumer extends BrokerConsumer {
 

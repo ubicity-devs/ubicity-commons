@@ -1,5 +1,7 @@
 package at.ac.ait.ubicity.commons.broker;
 
+import java.util.HashMap;
+
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -10,34 +12,16 @@ import org.apache.log4j.Logger;
 import org.fusesource.stomp.jms.StompJmsDestination;
 
 import at.ac.ait.ubicity.commons.broker.events.EventEntry;
-import at.ac.ait.ubicity.commons.broker.exceptions.UbicityBrokerException;
+import at.ac.ait.ubicity.commons.exceptions.UbicityBrokerException;
 
 public abstract class BrokerProducer extends AbstractBrokerClient {
 
 	private static final Logger logger = Logger.getLogger(BrokerProducer.class);
-
-	private MessageProducer producer;
-
-	/**
-	 * Creates the producer for the given destination.
-	 * 
-	 * @param dest
-	 * @throws UbicityBrokerException
-	 */
-	protected void setProducer(String dest) throws UbicityBrokerException {
-
-		Destination destination;
-		try {
-			destination = StompJmsDestination.createDestination(
-					getConnection(), calcDestination(dest));
-			producer = getSession().createProducer(destination);
-			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-		} catch (JMSException e) {
-			throw new UbicityBrokerException(e);
-		}
-	}
+	private static HashMap<String, MessageProducer> producers = new HashMap<String, MessageProducer>();
 
 	public void publish(EventEntry msg) throws UbicityBrokerException {
+
+		MessageProducer producer = getProducer(msg.getNextPlugin());
 
 		try {
 			TextMessage tMsg = getSession().createTextMessage();
@@ -48,10 +32,40 @@ public abstract class BrokerProducer extends AbstractBrokerClient {
 		}
 	}
 
-	@Override
-	public void shutdown() {
+	/**
+	 * Returns the Messageproducer for the given destination.
+	 * 
+	 * @param dest
+	 * @return
+	 * @throws UbicityBrokerException
+	 */
+	private MessageProducer getProducer(String dest) throws UbicityBrokerException {
+
+		MessageProducer producer = producers.get(dest);
+
+		if (producer == null) {
+			Destination destination;
+			try {
+				destination = StompJmsDestination.createDestination(getConnection(), calcDestination(dest));
+				producer = getSession().createProducer(destination);
+				producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+				producers.put(dest, producer);
+			} catch (JMSException e) {
+				throw new UbicityBrokerException(e);
+			}
+		}
+
+		return producer;
+	}
+
+	public void shutdown(String dest) {
 		try {
-			producer.close();
+			MessageProducer producer = producers.get(dest);
+
+			if (producer != null) {
+				producer.close();
+			}
+			// producer.close();
 		} catch (JMSException e) {
 			logger.warn("Close producer threw exc.", e);
 		}

@@ -6,9 +6,6 @@ import org.quartz.Job;
 
 /**
  * Interface for time triggered plugins
- * 
- * @author ruggenthalerc
- *
  */
 public interface CronTask extends Job {
 
@@ -19,8 +16,7 @@ public interface CronTask extends Job {
 	/**
 	 * String representation of cron trigger.
 	 * 
-	 * @See http://quartz-scheduler.org/documentation/quartz-1.x/tutorials/
-	 *      crontrigger
+	 * @See http://quartz-scheduler.org/documentation/quartz-1.x/tutorials/ crontrigger
 	 * @return
 	 */
 	String getTimeInterval();
@@ -28,8 +24,7 @@ public interface CronTask extends Job {
 	/**
 	 * Set String representation of cron trigger.
 	 * 
-	 * @See http://quartz-scheduler.org/documentation/quartz-1.x/tutorials/
-	 *      crontrigger
+	 * @See http://quartz-scheduler.org/documentation/quartz-1.x/tutorials/ crontrigger
 	 * @return
 	 */
 	void setTimeInterval(String interval);

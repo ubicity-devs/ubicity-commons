@@ -6,9 +6,6 @@ import at.ac.ait.ubicity.commons.cron.UbicityCronException;
 
 /**
  * Interface for time triggered plugins
- * 
- * @author ruggenthalerc
- *
  */
 public interface CronPlugin extends UbicityPlugin {
 
