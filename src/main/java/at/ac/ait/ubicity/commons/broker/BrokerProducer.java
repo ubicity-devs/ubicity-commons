@@ -19,7 +19,7 @@ public abstract class BrokerProducer extends AbstractBrokerClient {
 	private static final Logger logger = Logger.getLogger(BrokerProducer.class);
 	private static HashMap<String, MessageProducer> producers = new HashMap<String, MessageProducer>();
 
-	public void publish(EventEntry msg) throws UbicityBrokerException {
+	public synchronized void publish(EventEntry msg) throws UbicityBrokerException {
 
 		MessageProducer producer = getProducer(msg.getNextPlugin());
 
@@ -39,7 +39,7 @@ public abstract class BrokerProducer extends AbstractBrokerClient {
 	 * @return
 	 * @throws UbicityBrokerException
 	 */
-	private MessageProducer getProducer(String dest) throws UbicityBrokerException {
+	private synchronized MessageProducer getProducer(String dest) throws UbicityBrokerException {
 
 		MessageProducer producer = producers.get(dest);
 
