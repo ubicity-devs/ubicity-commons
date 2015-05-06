@@ -11,7 +11,7 @@ public abstract class AbstractDTO {
 
 	private static Gson gson = new GsonBuilder().create();
 
-	private static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
+	private final static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
 	{
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
