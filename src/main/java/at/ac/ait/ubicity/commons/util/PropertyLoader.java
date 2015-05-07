@@ -5,6 +5,7 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.NoSuchElementException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -59,7 +60,11 @@ public class PropertyLoader {
 	}
 
 	public boolean getBoolean(String key) {
-		return config.getBoolean(key);
+		try {
+			return config.getBoolean(key);
+		} catch (NoSuchElementException e) {
+			return false;
+		}
 	}
 
 	String decrypt(String value) {
@@ -73,8 +78,7 @@ public class PropertyLoader {
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, encrKey);
 
-			return new String(cipher.doFinal(Base64.getDecoder().decode(
-					encrText.getBytes("UTF-8"))));
+			return new String(cipher.doFinal(Base64.getDecoder().decode(encrText.getBytes("UTF-8"))));
 		} catch (Exception e) {
 			logger.error("Exc caught in decrypting", e);
 		}
@@ -88,9 +92,7 @@ public class PropertyLoader {
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE, encrKey);
 
-			encText = ENC_PREFIX
-					+ new String(Base64.getEncoder().encode(
-							cipher.doFinal(value.getBytes("UTF-8"))));
+			encText = ENC_PREFIX + new String(Base64.getEncoder().encode(cipher.doFinal(value.getBytes("UTF-8"))));
 		} catch (Exception e) {
 			logger.error("Exc caught in encrypting", e);
 		}
