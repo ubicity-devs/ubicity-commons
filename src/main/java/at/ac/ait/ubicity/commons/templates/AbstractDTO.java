@@ -11,11 +11,6 @@ public abstract class AbstractDTO {
 
 	private static Gson gson = new GsonBuilder().create();
 
-	private final static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
-	{
-		df.setTimeZone(TimeZone.getTimeZone("UTC"));
-	}
-
 	/**
 	 * Returns the date as standard formated string representation or null.
 	 * 
@@ -23,6 +18,9 @@ public abstract class AbstractDTO {
 	 * @return
 	 */
 	protected String dateAsString(Date date) {
+
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
+		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 		if (date != null) {
 			return df.format(date);
