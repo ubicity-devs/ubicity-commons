@@ -12,7 +12,7 @@ import at.ac.ait.ubicity.commons.util.PropertyLoader;
 
 public abstract class AbstractBrokerClient {
 
-	private StompJmsConnection connection;
+	private static StompJmsConnection connection;
 	private Session session;
 	private String destinationPrefix;
 
@@ -37,8 +37,11 @@ public abstract class AbstractBrokerClient {
 		factory.setBrokerURI(host);
 
 		try {
-			connection = (StompJmsConnection) factory.createConnection(user, pwd);
-			connection.start();
+			if (connection == null) {
+				connection = (StompJmsConnection) factory.createConnection(user, pwd);
+				connection.start();
+			}
+
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 		} catch (JMSException e) {
 			throw new UbicityBrokerException(e);
@@ -60,7 +63,7 @@ public abstract class AbstractBrokerClient {
 	}
 
 	protected StompJmsConnection getConnection() {
-		return this.connection;
+		return AbstractBrokerClient.connection;
 	}
 
 	/**
