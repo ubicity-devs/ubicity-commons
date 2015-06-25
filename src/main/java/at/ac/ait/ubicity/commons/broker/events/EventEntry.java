@@ -25,7 +25,7 @@ public class EventEntry implements Serializable {
 	/**
 	 * List of destinations for processing in successive order.
 	 */
-	private List<String> pluginChain = new ArrayList<String>();
+	private transient List<String> pluginChain = new ArrayList<String>();
 	private String body;
 
 	public EventEntry(HashMap<Property, String> header, String body) throws UbicityException {
