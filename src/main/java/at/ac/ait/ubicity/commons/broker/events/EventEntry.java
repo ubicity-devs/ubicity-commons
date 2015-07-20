@@ -35,6 +35,9 @@ public class EventEntry implements Serializable {
 	public EventEntry(String jsonString) throws UbicityException {
 		EventEntry e = gson.fromJson(jsonString, this.getClass());
 		init(e.header, e.body);
+
+		// Remove current destination to avoid cycles
+		removeCurrentPlugin();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -77,6 +80,10 @@ public class EventEntry implements Serializable {
 		return this.body;
 	}
 
+	public void setBody(String body) {
+		this.body = body;
+	}
+
 	public String toJson() {
 		return gson.toJson(this);
 	}
@@ -85,7 +92,10 @@ public class EventEntry implements Serializable {
 		return pluginChain.get(0);
 	}
 
-	List<String> getPluginChain() {
-		return pluginChain;
+	private void removeCurrentPlugin() {
+		if (pluginChain != null) {
+			pluginChain.remove(0);
+			this.header.put(Property.PLUGIN_CHAIN, formatPluginChain(pluginChain));
+		}
 	}
 }

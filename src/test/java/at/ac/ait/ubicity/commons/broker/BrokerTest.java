@@ -36,4 +36,24 @@ public class BrokerTest {
 
 		System.out.println(e1.getNextPlugin());
 	}
+
+	@Test
+	public void testHashmapJson() {
+
+		HashMap<Property, String> header = new HashMap<EventEntry.Property, String>();
+		header.put(Property.ID, "546546");
+		header.put(Property.PLUGIN_CHAIN, EventEntry.formatPluginChain(Arrays.asList("/queue/ES.1", "/queue/ES.RSS")));
+		header.put(Property.ES_INDEX, "index");
+		header.put(Property.ES_TYPE, "type");
+
+		EventEntry e = new EventEntry(header, "Body");
+
+		String json = gson.toJson(e);
+
+		System.out.println(json);
+		System.out.println(e.getNextPlugin());
+
+		EventEntry e1 = new EventEntry(json);
+		System.out.println(e1.getNextPlugin());
+	}
 }
