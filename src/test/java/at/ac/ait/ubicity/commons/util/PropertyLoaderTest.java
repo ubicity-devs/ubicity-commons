@@ -23,4 +23,14 @@ public class PropertyLoaderTest {
 
 		System.out.println(loader.encrypt("test"));
 	}
+
+	@Test
+	public void printEncKeys() {
+		PropertyLoader loader = new PropertyLoader();
+
+		System.out.println(loader.encrypt("aaa"));
+		System.out.println(loader.encrypt("bbb"));
+		System.out.println(loader.encrypt("ccc"));
+		System.out.println(loader.encrypt("ddd"));
+	}
 }
