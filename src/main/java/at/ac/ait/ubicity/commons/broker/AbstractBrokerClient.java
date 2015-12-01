@@ -19,10 +19,8 @@ public abstract class AbstractBrokerClient {
 	private static final Logger logger = Logger.getLogger(AbstractBrokerClient.class);
 
 	/**
-	 * Sets up the Broker connection with configured username & password.
+	 * Sets up the Broker connection.
 	 * 
-	 * @param user
-	 * @param pwd
 	 * @throws UbicityBrokerException
 	 */
 	protected void init(String user, String pwd) throws UbicityBrokerException {
@@ -46,6 +44,16 @@ public abstract class AbstractBrokerClient {
 		} catch (JMSException e) {
 			throw new UbicityBrokerException(e);
 		}
+	}
+
+	/**
+	 * Sets up the Broker connection with default user & pwd.
+	 * 
+	 * @throws UbicityBrokerException
+	 */
+	protected void init() throws UbicityBrokerException {
+		PropertyLoader config = new PropertyLoader(AbstractBrokerClient.class.getResource("/broker_client.cfg"));
+		init(config.getString("env.apollo.client.user"), config.getString("env.apollo.client.pwd"));
 	}
 
 	protected void shutdown() {

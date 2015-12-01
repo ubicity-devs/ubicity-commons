@@ -10,7 +10,7 @@ public class SimpleConsumer extends BrokerConsumer {
 	final static Logger logger = Logger.getLogger(SimpleConsumer.class);
 
 	public SimpleConsumer() throws UbicityBrokerException {
-		super.init("", "");
+		super.init();
 		setConsumer(this, "/queue/ES.**");
 	}
 
