@@ -28,7 +28,7 @@ public abstract class AbstractBrokerClient {
 
 		destinationPrefix = config.getString("env.apollo.dest.prefix");
 
-		String host = config.getString("plugin.apollo.client.host");
+		String host = config.getString("env.apollo.broker.host");
 		host = host + ":" + config.getString("env.apollo.broker.tcp.port");
 
 		StompJmsConnectionFactory factory = new StompJmsConnectionFactory();
