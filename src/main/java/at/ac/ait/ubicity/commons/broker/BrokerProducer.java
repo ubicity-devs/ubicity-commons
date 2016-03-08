@@ -20,12 +20,25 @@ public abstract class BrokerProducer extends AbstractBrokerClient {
 	private static HashMap<String, MessageProducer> producers = new HashMap<String, MessageProducer>();
 
 	public synchronized void publish(EventEntry msg) throws UbicityBrokerException {
+		send(msg.getNextPlugin(), msg.toJson());
+	}
 
-		MessageProducer producer = getProducer(msg.getNextPlugin());
+	/**
+	 * Send Message to broker without internal EventEntry structure.
+	 * 
+	 * @param destination
+	 * @param msg
+	 * @throws UbicityBrokerException
+	 */
+	public synchronized void publishRaw(EventEntry msg) throws UbicityBrokerException {
+		send(msg.getNextPlugin(), msg.getBody());
+	}
 
+	private void send(String destination, String msg) throws UbicityBrokerException {
+		MessageProducer producer = getProducer(destination);
 		try {
 			TextMessage tMsg = getSession().createTextMessage();
-			tMsg.setText(msg.toJson());
+			tMsg.setText(msg);
 			producer.send(tMsg);
 		} catch (JMSException e) {
 			throw new UbicityBrokerException(e);
